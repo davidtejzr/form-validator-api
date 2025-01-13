@@ -1,0 +1,35 @@
+services:
+  app:
+    build: docker/app
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    networks:
+      - app
+
+  mongodb:
+    image: mongo:8
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: toor
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app
+
+  mailcatcher:
+    image: dockage/mailcatcher
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    networks:
+      - app
+
+networks:
+  app:
+
+volumes:
+  mongodb_data:
