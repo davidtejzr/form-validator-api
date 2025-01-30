@@ -7,6 +7,9 @@ export class Email extends Document {
   @Prop({ required: true })
   email: string;
 
+  @Prop({ required: true })
+  domain: string;
+
   @Prop({ default: Date.now })
   createdAt: Date;
 
@@ -18,6 +21,18 @@ export class Email extends Document {
 
   @Prop({ default: 1 })
   searchCount: number;
+
+  @Prop({ default: null })
+  noMxRecords: boolean;
+
+  @Prop({ default: null, type: String })
+  blacklistedDomain: boolean | 'failed';
+
+  @Prop({ default: null })
+  disposableAddress: boolean;
+
+  @Prop({ default: null, type: String })
+  deliverableAddress: boolean | 'undeclared';
 }
 
 export const EmailSchema = SchemaFactory.createForClass(Email);

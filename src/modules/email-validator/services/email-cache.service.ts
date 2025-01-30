@@ -4,6 +4,7 @@ import { EmailValidationStatus } from '../../../enums/email-validation-status.en
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
+import { EmailValidationResultInterface } from '../../../interfaces/email-validation-result.interface';
 
 @Injectable()
 export class EmailCacheService {
@@ -13,6 +14,11 @@ export class EmailCacheService {
   ) {}
   async getEmail(email: string): Promise<Email | null> {
     return this.emailModel.findOne({ email }).exec();
+  }
+
+  async saveEmail(email: string): Promise<Email> {
+    const domain = email.split('@')[1];
+    return await new this.emailModel({ email, domain }).save();
   }
 
   isOutdated(date: Date): boolean {
@@ -32,10 +38,53 @@ export class EmailCacheService {
   async persistValidationStatus(
     email: Email,
     validationStatus: EmailValidationStatus,
+    partialResults: EmailValidationResultInterface,
   ): Promise<void> {
+    const {
+      noMxRecords,
+      blacklistedDomain,
+      disposableAddress,
+      deliverableAddress,
+    } = partialResults;
+
     await this.emailModel.updateOne(
       { _id: email._id },
-      { $set: { validationStatus, updatedAt: new Date() } },
+      {
+        $set: {
+          validationStatus,
+          noMxRecords,
+          blacklistedDomain,
+          disposableAddress,
+          deliverableAddress,
+          updatedAt: new Date(),
+        },
+      },
     );
+  }
+
+  async getEmailDomainSuggestions(email: string): Promise<string[]> {
+    const results = await this.emailModel.aggregate([
+      {
+        $match: { email: { $regex: `@${email}`, $options: 'i' } },
+      },
+      {
+        $project: {
+          domain: {
+            $substr: ['$email', { $indexOfBytes: ['$email', '@'] }, -1],
+          },
+        },
+      },
+      {
+        $group: { _id: '$domain', count: { $sum: 1 } },
+      },
+      {
+        $sort: { count: -1 },
+      },
+      {
+        $limit: 5,
+      },
+    ]);
+
+    return results.map((item) => item._id);
   }
 }

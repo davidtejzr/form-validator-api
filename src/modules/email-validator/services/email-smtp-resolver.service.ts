@@ -3,10 +3,14 @@ import * as net from 'node:net';
 
 @Injectable()
 export class EmailSmtpResolverService {
-  async isEmailDeliverable(exchange: string, email: string): Promise<boolean> {
+  async isEmailDeliverable(
+    exchange: string,
+    email: string,
+  ): Promise<boolean | 'undeclared'> {
     const senderTest = 'test@gmail.com';
     let receivedData = false;
     let closed = false;
+    let targetExchangeExists = false;
 
     return new Promise((resolve) => {
       const socket = net.createConnection(25, exchange);
@@ -38,6 +42,10 @@ export class EmailSmtpResolverService {
           socket.destroy();
         }
         console.log('fail:', msg);
+        if (msg === 'Timeout') {
+          resolve('undeclared');
+        }
+
         resolve(false);
       });
 
@@ -49,6 +57,10 @@ export class EmailSmtpResolverService {
           socket.destroy();
         }
         console.log('success');
+        if (!targetExchangeExists) {
+          console.log('False positive result.');
+          resolve('undeclared');
+        }
         resolve(true);
       });
 
@@ -67,7 +79,6 @@ export class EmailSmtpResolverService {
           }
         } else {
           socket.emit('success');
-          console.log('command success');
         }
       });
 
@@ -80,6 +91,9 @@ export class EmailSmtpResolverService {
           console.log('msg: ', msg);
           receivedData = true;
           if (this.hasCode(msg, 220) || this.hasCode(msg, 250)) {
+            if (msg.includes('250 2.1.5')) {
+              targetExchangeExists = true;
+            }
             socket.emit('next', msg);
           } else if (this.hasCode(msg, 550)) {
             socket.emit('fail', 'Mailbox not found.');

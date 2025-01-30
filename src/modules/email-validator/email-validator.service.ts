@@ -8,9 +8,13 @@ import { EmailDnsResolverService } from './services/email-dns-resolver.service';
 import { EmailFilterService } from './services/email-filter.service';
 import { EmailCacheService } from './services/email-cache.service';
 import { EmailSmtpResolverService } from './services/email-smtp-resolver.service';
+import { EmailValidationLevelEnum } from '../../enums/email-validation-level.enum';
+import { EmailValidationResultInterface } from '../../interfaces/email-validation-result.interface';
 
 @Injectable()
 export class EmailValidatorService {
+  private partialResults: EmailValidationResultInterface;
+
   constructor(
     @InjectModel(Email.name) private emailModel: Model<Email>,
     private cacheService: EmailCacheService,
@@ -21,8 +25,16 @@ export class EmailValidatorService {
   ) {}
 
   async validateEmail(email: string): Promise<EmailValidationStatus> {
-    console.log('email to resolve:', email);
+    this.partialResults = {
+      cachedResult: null,
+      invalidFormat: false,
+      noMxRecords: null,
+      blacklistedDomain: null,
+      disposableAddress: null,
+      deliverableAddress: null,
+    };
     if (!this.formatValidatorService.acceptRfc5322Standard(email)) {
+      this.partialResults.invalidFormat = true;
       return EmailValidationStatus.INVALID_FORMAT;
     }
 
@@ -30,49 +42,99 @@ export class EmailValidatorService {
     if (emailInstance) {
       await this.cacheService.increaseSearchCount(emailInstance);
       if (!this.cacheService.isOutdated(emailInstance.updatedAt)) {
-        console.log('cache hit');
+        Object.assign(this.partialResults, {
+          cachedResult: true,
+          noMxRecords: emailInstance.noMxRecords,
+          blacklistedDomain: this.parseMixedType(
+            emailInstance.blacklistedDomain,
+          ),
+          disposableAddress: emailInstance.disposableAddress,
+          deliverableAddress: this.parseMixedType(
+            emailInstance.deliverableAddress,
+          ),
+        });
         return emailInstance.validationStatus;
       }
     } else {
-      emailInstance = await new this.emailModel({ email }).save();
+      this.partialResults.cachedResult = false;
+      emailInstance = await this.cacheService.saveEmail(email);
     }
 
-    console.log('instance:', emailInstance);
-    const validationStatus = await this.resolveValidationStatus(
-      emailInstance.email,
-    );
+    const validationStatus = await this.resolveValidationStatus(emailInstance);
 
     await this.cacheService.persistValidationStatus(
       emailInstance,
       validationStatus,
+      this.partialResults,
     );
     return validationStatus;
   }
 
   private async resolveValidationStatus(
-    email: string,
+    emailInstance: Email,
   ): Promise<EmailValidationStatus> {
-    const domain = email.split('@')[1];
-
-    const mxRecord =
-      await this.dnsResolverService.getHighestPriorityMxRecord(domain);
+    const mxRecord = await this.dnsResolverService.getHighestPriorityMxRecord(
+      emailInstance.domain,
+    );
+    this.partialResults.noMxRecords = mxRecord === false;
     if (typeof mxRecord === 'boolean') {
       return EmailValidationStatus.NO_MX_RECORDS;
     }
 
-    const isDeliverable = await this.smtpResolverService.isEmailDeliverable(
-      mxRecord,
-      email,
+    const isDisposable = this.filterService.isDisposableDomain(
+      emailInstance.domain,
     );
-    if (!isDeliverable) {
-      return EmailValidationStatus.UNDELIVERABLE_ADDRESS;
-    }
-
-    const isDisposable = this.filterService.isDisposableDomain(domain);
+    this.partialResults.disposableAddress = isDisposable;
     if (isDisposable) {
       return EmailValidationStatus.DISPOSABLE_ADDRESS;
     }
 
+    const isOnBlacklist = await this.filterService.isDomainOnBlacklist(
+      emailInstance.domain,
+    );
+    this.partialResults.blacklistedDomain = isOnBlacklist;
+    if (isOnBlacklist) {
+      return EmailValidationStatus.BLACKLISTED_DOMAIN;
+    }
+
+    const isDeliverable = await this.smtpResolverService.isEmailDeliverable(
+      mxRecord,
+      emailInstance.email,
+    );
+    this.partialResults.deliverableAddress = isDeliverable;
+    if (!isDeliverable) {
+      return EmailValidationStatus.UNDELIVERABLE_ADDRESS;
+    }
+    if (isDeliverable === 'undeclared') {
+      return EmailValidationStatus.UNDECLARED_ADDRESS;
+    }
+
     return EmailValidationStatus.VALID;
+  }
+
+  resolveValidationLevel(validationStatus: EmailValidationStatus) {
+    switch (validationStatus) {
+      case EmailValidationStatus.VALID:
+        return EmailValidationLevelEnum.GREEN;
+      case EmailValidationStatus.UNDECLARED_ADDRESS:
+        return EmailValidationLevelEnum.YELLOW;
+      default:
+        return EmailValidationLevelEnum.RED;
+    }
+  }
+
+  getPartialResults() {
+    return this.partialResults;
+  }
+
+  private parseMixedType(value: string | boolean): boolean | string {
+    if (value === 'true') {
+      return true;
+    }
+    if (value === 'false') {
+      return false;
+    } else {
+      return value;
+    }
   }
 }
