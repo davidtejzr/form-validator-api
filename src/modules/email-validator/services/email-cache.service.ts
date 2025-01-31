@@ -89,10 +89,11 @@ export class EmailCacheService {
     }
   }
 
-  async getEmailDomainSuggestions(query: string, limit = 5): Promise<string[]> {
+  async getEmailDomainSuggestions(email: string, limit = 5): Promise<string[]> {
+    const domain = email.split('@')[1];
     return this.domainModel
-      .find({ name: new RegExp(`^${query}`, 'i') })
-      .sort({ count: -1 })
+      .find({ name: new RegExp(`^${domain}`, 'i') })
+      .sort({ searchCount: 'desc' })
       .limit(limit)
       .then((domains) => domains.map((d) => d.name));
   }

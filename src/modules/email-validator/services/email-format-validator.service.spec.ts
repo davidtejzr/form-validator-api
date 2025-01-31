@@ -59,4 +59,29 @@ describe('EmailFormatValidatorService', () => {
     const invalidEmail = 'test@invalid-domain.a';
     expect(service.acceptRfc5322Standard(invalidEmail)).toBe(false);
   });
+
+  it('should return true for uncomplete domain', () => {
+    const incompleteEmail = 'test@go';
+    expect(service.isValidEmailWithoutDomain(incompleteEmail)).toBe(true);
+  });
+
+  it('should return true for uncomplete domain', () => {
+    const incompleteEmail = 'test@google.c';
+    expect(service.isValidEmailWithoutDomain(incompleteEmail)).toBe(true);
+  });
+
+  it('should return false for email without @', () => {
+    const incompleteEmail = 'test';
+    expect(service.isValidEmailWithoutDomain(incompleteEmail)).toBe(false);
+  });
+
+  it('should return false for empty domain', () => {
+    const incompleteEmail = 'test@';
+    expect(service.isValidEmailWithoutDomain(incompleteEmail)).toBe(false);
+  });
+
+  it('should return false for domain starting "."', () => {
+    const incompleteEmail = 'test@.';
+    expect(service.isValidEmailWithoutDomain(incompleteEmail)).toBe(false);
+  });
 });

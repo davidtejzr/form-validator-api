@@ -2,12 +2,14 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { EmailValidatorService } from './email-validator.service';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { EmailCacheService } from './services/email-cache.service';
+import { EmailFormatValidatorService } from './services/email-format-validator.service';
 
 @Controller('email-validator')
 export class EmailValidatorController {
   constructor(
     private readonly emailValidatorService: EmailValidatorService,
     private readonly emailCacheService: EmailCacheService,
+    private readonly emailFormatValidatorService: EmailFormatValidatorService,
   ) {}
 
   @Post('validate-basic')
@@ -66,24 +68,38 @@ export class EmailValidatorController {
   }
 
   @Get('autocomplete')
-  @ApiOperation({ summary: 'Autocomplete e-mailových domén' })
+  @ApiOperation({ summary: 'E-mail domains autocomplete' })
   @ApiQuery({
-    name: 'domain',
+    name: 'email',
     type: String,
-    description: 'Začátek domény',
+    description:
+      'The beginning of the email address with @ and at least one domain character',
+    required: true,
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: Number,
+    minimum: 1,
+    maximum: 20,
+    default: 5,
+    description: 'Maximum rows to return',
     required: true,
   })
   @ApiResponse({
     status: 200,
-    description: 'Vrací seznam navrhovaných domén',
+    description: 'Return array of suggested email domains',
     type: [String],
   })
   async getEmailDomainSuggestions(
-    @Query('domain') query: string,
+    @Query('email') email: string,
+    @Query('limit') limit: number,
   ): Promise<string[]> {
-    if (!query) {
+    if (
+      !email ||
+      !this.emailFormatValidatorService.isValidEmailWithoutDomain(email)
+    ) {
       return [];
     }
-    return this.emailCacheService.getEmailDomainSuggestions(query);
+    return this.emailCacheService.getEmailDomainSuggestions(email, limit);
   }
 }

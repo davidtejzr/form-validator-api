@@ -5,6 +5,7 @@ import { EmailValidatorModule } from './modules/email-validator/email-validator.
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
+import { CompanyValidatorModule } from './modules/company-validator/company-validator.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import configuration from './config/configuration';
       inject: [ConfigService],
     }),
     EmailValidatorModule,
+    CompanyValidatorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
