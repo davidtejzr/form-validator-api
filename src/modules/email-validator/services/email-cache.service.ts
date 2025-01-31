@@ -5,11 +5,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
 import { EmailValidationResultInterface } from '../../../interfaces/email-validation-result.interface';
+import { Domain } from '../../../schemas/domain.schema';
 
 @Injectable()
 export class EmailCacheService {
   constructor(
     @InjectModel(Email.name) private emailModel: Model<Email>,
+    @InjectModel(Domain.name) private domainModel: Model<Domain>,
     private configService: ConfigService,
   ) {}
   async getEmail(email: string): Promise<Email | null> {
@@ -62,29 +64,36 @@ export class EmailCacheService {
     );
   }
 
-  async getEmailDomainSuggestions(email: string): Promise<string[]> {
-    const results = await this.emailModel.aggregate([
-      {
-        $match: { email: { $regex: `@${email}`, $options: 'i' } },
-      },
-      {
-        $project: {
-          domain: {
-            $substr: ['$email', { $indexOfBytes: ['$email', '@'] }, -1],
-          },
-        },
-      },
-      {
-        $group: { _id: '$domain', count: { $sum: 1 } },
-      },
-      {
-        $sort: { count: -1 },
-      },
-      {
-        $limit: 5,
-      },
-    ]);
+  async checkAndSaveDomain(
+    domain: string,
+    partialResults: EmailValidationResultInterface,
+  ): Promise<void> {
+    if (
+      partialResults.noMxRecords ||
+      partialResults.blacklistedDomain === true ||
+      partialResults.disposableAddress
+    ) {
+      return;
+    }
 
-    return results.map((item) => item._id);
+    const existingDomain = await this.domainModel.findOne({
+      name: domain,
+    });
+    if (existingDomain) {
+      await this.domainModel.updateOne(
+        { _id: existingDomain._id },
+        { $inc: { searchCount: 1 } },
+      );
+    } else {
+      await new this.domainModel({ name: domain, searchCount: 1 }).save();
+    }
+  }
+
+  async getEmailDomainSuggestions(query: string, limit = 5): Promise<string[]> {
+    return this.domainModel
+      .find({ name: new RegExp(`^${query}`, 'i') })
+      .sort({ count: -1 })
+      .limit(limit)
+      .then((domains) => domains.map((d) => d.name));
   }
 }

@@ -9,10 +9,14 @@ import { EmailDnsResolverService } from './services/email-dns-resolver.service';
 import { EmailFilterService } from './services/email-filter.service';
 import { EmailFormatValidatorService } from './services/email-format-validator.service';
 import { EmailSmtpResolverService } from './services/email-smtp-resolver.service';
+import { Domain, DomainSchema } from '../../schemas/domain.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Email.name, schema: EmailSchema }]),
+    MongooseModule.forFeature([
+      { name: Email.name, schema: EmailSchema },
+      { name: Domain.name, schema: DomainSchema },
+    ]),
     ConfigModule,
   ],
   controllers: [EmailValidatorController],

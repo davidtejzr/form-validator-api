@@ -53,6 +53,10 @@ export class EmailValidatorService {
             emailInstance.deliverableAddress,
           ),
         });
+        await this.cacheService.checkAndSaveDomain(
+          emailInstance.domain,
+          this.partialResults,
+        );
         return emailInstance.validationStatus;
       }
     } else {
@@ -61,6 +65,10 @@ export class EmailValidatorService {
     }
 
     const validationStatus = await this.resolveValidationStatus(emailInstance);
+    await this.cacheService.checkAndSaveDomain(
+      emailInstance.domain,
+      this.partialResults,
+    );
 
     await this.cacheService.persistValidationStatus(
       emailInstance,

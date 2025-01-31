@@ -1,10 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { EmailValidatorService } from './email-validator.service';
-import { ApiBody, ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { EmailCacheService } from './services/email-cache.service';
 
 @Controller('email-validator')
 export class EmailValidatorController {
-  constructor(private readonly emailValidatorService: EmailValidatorService) {}
+  constructor(
+    private readonly emailValidatorService: EmailValidatorService,
+    private readonly emailCacheService: EmailCacheService,
+  ) {}
 
   @Post('validate-basic')
   @ApiOperation({
@@ -59,5 +63,27 @@ export class EmailValidatorController {
       this.emailValidatorService.resolveValidationLevel(validationStatus);
     const partialResults = this.emailValidatorService.getPartialResults();
     return { validationStatus, validationLevel, partialResults };
+  }
+
+  @Get('autocomplete')
+  @ApiOperation({ summary: 'Autocomplete e-mailových domén' })
+  @ApiQuery({
+    name: 'domain',
+    type: String,
+    description: 'Začátek domény',
+    required: true,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Vrací seznam navrhovaných domén',
+    type: [String],
+  })
+  async getEmailDomainSuggestions(
+    @Query('domain') query: string,
+  ): Promise<string[]> {
+    if (!query) {
+      return [];
+    }
+    return this.emailCacheService.getEmailDomainSuggestions(query);
   }
 }
