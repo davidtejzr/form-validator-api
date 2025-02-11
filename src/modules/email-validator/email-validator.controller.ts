@@ -19,7 +19,14 @@ export class EmailValidatorController {
   @ApiBody({
     schema: {
       type: 'object',
-      properties: { email: { type: 'string', default: 'test@gmail.com' } },
+      properties: {
+        email: {
+          type: 'string',
+          default: 'test@gmail.com',
+          minLength: 3,
+          maxLength: 254,
+        },
+      },
     },
   })
   async validateEmailBasic(@Body('email') email: string) {
@@ -36,7 +43,14 @@ export class EmailValidatorController {
   @ApiBody({
     schema: {
       type: 'object',
-      properties: { email: { type: 'string', default: 'test@gmail.com' } },
+      properties: {
+        email: {
+          type: 'string',
+          default: 'test@gmail.com',
+          minLength: 3,
+          maxLength: 254,
+        },
+      },
     },
   })
   async validateEmailRecommended(@Body('email') email: string) {
@@ -55,7 +69,14 @@ export class EmailValidatorController {
   @ApiBody({
     schema: {
       type: 'object',
-      properties: { email: { type: 'string', default: 'test@gmail.com' } },
+      properties: {
+        email: {
+          type: 'string',
+          default: 'test@gmail.com',
+          minLength: 3,
+          maxLength: 254,
+        },
+      },
     },
   })
   async validateEmailAdvanced(@Body('email') email: string) {
@@ -72,6 +93,8 @@ export class EmailValidatorController {
   @ApiQuery({
     name: 'email',
     type: String,
+    minimum: 3,
+    maximum: 254,
     description:
       'The beginning of the email address with @ and at least one domain character',
     required: true,

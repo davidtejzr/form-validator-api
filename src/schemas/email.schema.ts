@@ -4,7 +4,7 @@ import { EmailValidationStatus } from '../enums/email-validation-status.enum';
 
 @Schema({ versionKey: false })
 export class Email extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, unique: true, minlength: 3, maxlength: 254 })
   email: string;
 
   @Prop({ required: true })

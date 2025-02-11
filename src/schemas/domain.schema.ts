@@ -8,6 +8,12 @@ export class Domain extends Document {
 
   @Prop({ default: 1 })
   searchCount: number;
+
+  @Prop({ default: Date.now, required: true })
+  createdAt: Date;
+
+  @Prop({ default: Date.now, required: true })
+  updatedAt: Date;
 }
 
 export const DomainSchema = SchemaFactory.createForClass(Domain);
