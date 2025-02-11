@@ -59,7 +59,10 @@ export class CompanyValidatorController {
     description: 'Return array of suggested companies',
     type: [String],
   })
-  async searchCompanyByName(@Query('companyName') companyName: string, @Query('limit') limit: number) {
+  async searchCompanyByName(
+    @Query('companyName') companyName: string,
+    @Query('limit') limit: number,
+  ) {
     return this.companyValidator.searchCompanyByName(companyName, limit);
   }
 }
