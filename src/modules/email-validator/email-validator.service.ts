@@ -26,7 +26,7 @@ export class EmailValidatorService {
 
   async validateEmail(email: string): Promise<EmailValidationStatus> {
     this.partialResults = {
-      cachedResult: null,
+      cachedResult: false,
       invalidFormat: false,
       noMxRecords: null,
       blacklistedDomain: null,

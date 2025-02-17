@@ -4,6 +4,7 @@ import { AresSearchResponseInterface } from '../../interfaces/ares-search-respon
 import { InjectModel } from '@nestjs/mongoose';
 import { Company } from '../../schemas/company.schema';
 import { Model } from 'mongoose';
+import { CompanyResponseDto } from './dtos/company-response-dto';
 
 @Injectable()
 export class CompanyValidatorService {
@@ -11,23 +12,114 @@ export class CompanyValidatorService {
     @InjectModel(Company.name) private companyModel: Model<Company>,
   ) {}
 
-  async hasValidIco(ico: string): Promise<boolean> {
+  async hasValidIco(ico: string): Promise<CompanyResponseDto> {
     if (ico.length !== 8) {
-      return false;
+      return { isValid: false };
     }
-    const response = await axios
-      .get(
-        `https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${ico}`,
-      )
-      .catch(() => {});
-    return !!response;
+    const result = await this.companyModel
+      .find()
+      .where('ico')
+      .equals(ico)
+      .exec();
+
+    const firstResult = result?.[0];
+    if (!firstResult) {
+      return { isValid: false };
+    }
+
+    return {
+      isValid: true,
+      ico: firstResult.ico,
+      dic: firstResult.dic,
+      companyName: firstResult.firma,
+    };
   }
 
-  async searchCompanyByName(companyName: string, limit = 5): Promise<string[]> {
+  async prefixSearchCompanyByIco(
+    ico: string,
+    limit = 5,
+  ): Promise<CompanyResponseDto[]> {
+    const result = await this.companyModel
+      .find({ ico: { $gte: ico, $lt: ico + '\uffff' } })
+      .sort({ ico: 1 })
+      .limit(limit)
+      .exec();
+
+    return result.map((company) => ({
+      isValid: true,
+      ico: company.ico,
+      dic: company.dic,
+      companyName: company.firma,
+    }));
+  }
+
+  async hasValidDic(dic: string): Promise<CompanyResponseDto> {
+    if (dic.length >= 12) {
+      return { isValid: false };
+    }
+    const result = await this.companyModel
+      .find()
+      .where('dic')
+      .equals(dic)
+      .exec();
+
+    const firstResult = result?.[0];
+    if (!firstResult) {
+      return { isValid: false };
+    }
+
+    return {
+      isValid: true,
+      ico: firstResult.ico,
+      dic: firstResult.dic,
+      companyName: firstResult.firma,
+    };
+  }
+
+  async prefixSearchCompanyByDic(
+    dic: string,
+    limit = 5,
+  ): Promise<CompanyResponseDto[]> {
+    const result = await this.companyModel
+      .find({ dic: { $gte: dic, $lt: dic + '\uffff' } })
+      .sort({ dic: 1 })
+      .limit(limit)
+      .exec();
+
+    return result.map((company) => ({
+      isValid: true,
+      ico: company.ico,
+      dic: company.dic,
+      companyName: company.firma,
+    }));
+  }
+
+  async prefixSearchCompanyByName(
+    companyName: string,
+    limit = 5,
+  ): Promise<CompanyResponseDto[]> {
     const result = await this.companyModel
       .find({ firma: { $gte: companyName, $lt: companyName + '\uffff' } })
       .collation({ locale: 'cs', strength: 1 })
       .sort({ firma: 1 })
+      .limit(limit)
+      .exec();
+
+    return result.map((company) => ({
+      isValid: true,
+      ico: company.ico,
+      dic: company.dic,
+      companyName: company.firma,
+    }));
+  }
+
+  async regexSearchCompanyByName(
+    companyName: string,
+    limit = 5,
+  ): Promise<string[]> {
+    const result = await this.companyModel
+      .find({ firma: new RegExp(companyName, 'i') })
+      .collation({ locale: 'cs', strength: 1 })
       .limit(limit)
       .exec();
     return result.map((company) => company.firma);
@@ -51,5 +143,17 @@ export class CompanyValidatorService {
       );
     }
     return [];
+  }
+
+  async hasValidIcoUsingAres(ico: string): Promise<boolean> {
+    if (ico.length !== 8) {
+      return false;
+    }
+    const response = await axios
+      .get(
+        `https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${ico}`,
+      )
+      .catch(() => {});
+    return !!response;
   }
 }

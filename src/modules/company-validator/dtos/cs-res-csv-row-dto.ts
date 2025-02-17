@@ -1,4 +1,4 @@
-export interface CsResCsvRowDto {
+export class CsResCsvRowDto {
   ICO: string;
   OKRESLAU: string;
   DDATVZN: string;

@@ -3,6 +3,9 @@ import { EmailValidatorService } from './email-validator.service';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { EmailCacheService } from './services/email-cache.service';
 import { EmailFormatValidatorService } from './services/email-format-validator.service';
+import { EmailValidateBasicResponseDto } from './dtos/email-validate-basic-response-dto';
+import { EmailValidateRecommendedResponseDto } from './dtos/email-validate-recommended-response-dto';
+import { EmailValidateAdvancedResponseDto } from './dtos/email-validate-advanced-response-dto';
 
 @Controller('email-validator')
 export class EmailValidatorController {
@@ -22,17 +25,28 @@ export class EmailValidatorController {
       properties: {
         email: {
           type: 'string',
-          default: 'test@gmail.com',
+          default: 'seznam@seznam.cz',
           minLength: 3,
           maxLength: 254,
         },
       },
     },
   })
-  async validateEmailBasic(@Body('email') email: string) {
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the validation level',
+    type: EmailValidateBasicResponseDto,
+  })
+  async validateEmailBasic(
+    @Body('email') email: string,
+  ): Promise<EmailValidateBasicResponseDto> {
     const validationStatus =
       await this.emailValidatorService.validateEmail(email);
-    return this.emailValidatorService.resolveValidationLevel(validationStatus);
+
+    return {
+      level:
+        this.emailValidatorService.resolveValidationLevel(validationStatus),
+    };
   }
 
   @Post('validate-recommended')
@@ -46,19 +60,25 @@ export class EmailValidatorController {
       properties: {
         email: {
           type: 'string',
-          default: 'test@gmail.com',
+          default: 'seznam@seznam.cz',
           minLength: 3,
           maxLength: 254,
         },
       },
     },
   })
-  async validateEmailRecommended(@Body('email') email: string) {
-    const validationStatus =
-      await this.emailValidatorService.validateEmail(email);
-    const validationLevel =
-      this.emailValidatorService.resolveValidationLevel(validationStatus);
-    return { validationStatus, validationLevel };
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the validation level and status message',
+    type: EmailValidateRecommendedResponseDto,
+  })
+  async validateEmailRecommended(
+    @Body('email') email: string,
+  ): Promise<EmailValidateRecommendedResponseDto> {
+    const statusMessage = await this.emailValidatorService.validateEmail(email);
+    const level =
+      this.emailValidatorService.resolveValidationLevel(statusMessage);
+    return { level, statusMessage };
   }
 
   @Post('validate-advanced')
@@ -72,20 +92,27 @@ export class EmailValidatorController {
       properties: {
         email: {
           type: 'string',
-          default: 'test@gmail.com',
+          default: 'seznam@seznam.cz',
           minLength: 3,
           maxLength: 254,
         },
       },
     },
   })
-  async validateEmailAdvanced(@Body('email') email: string) {
-    const validationStatus =
-      await this.emailValidatorService.validateEmail(email);
-    const validationLevel =
-      this.emailValidatorService.resolveValidationLevel(validationStatus);
+  @ApiResponse({
+    status: 200,
+    description:
+      'Returns the validation level, status message and partial validation results',
+    type: EmailValidateAdvancedResponseDto,
+  })
+  async validateEmailAdvanced(
+    @Body('email') email: string,
+  ): Promise<EmailValidateAdvancedResponseDto> {
+    const statusMessage = await this.emailValidatorService.validateEmail(email);
+    const level =
+      this.emailValidatorService.resolveValidationLevel(statusMessage);
     const partialResults = this.emailValidatorService.getPartialResults();
-    return { validationStatus, validationLevel, partialResults };
+    return { statusMessage, level, partialResults };
   }
 
   @Get('autocomplete')
