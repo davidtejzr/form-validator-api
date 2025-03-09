@@ -7,8 +7,8 @@ export class AddressValidatorController {
     private readonly addressValidatorService: AddressValidatorService,
   ) {}
 
-  @Get('search')
-  search(@Query('q') query: string) {
-    return this.addressValidatorService.search(query);
+  @Get('full-address/autocomplete')
+  search(@Query('query') query: string) {
+    return this.addressValidatorService.fullAddressAutocomplete(query);
   }
 }

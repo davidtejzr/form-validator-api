@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AddressValidatorService } from './address-validator.service';
 import { Address, AddressSchema } from '../../schemas/address.schema';
+import { OsmParserService } from './services/osm-parser.service';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { Address, AddressSchema } from '../../schemas/address.schema';
     ConfigModule,
   ],
   controllers: [AddressValidatorController],
-  providers: [AddressValidatorService],
+  providers: [AddressValidatorService, OsmParserService],
+  exports: [OsmParserService],
 })
 export class AddressValidatorModule {}

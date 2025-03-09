@@ -9,10 +9,17 @@ export class AddressValidatorService {
     @InjectModel(Address.name) private readonly addressModel: Model<Address>,
   ) {}
 
-  async search(query: string) {
+  async fullAddressAutocomplete(query: string) {
+    const regexQuery = new RegExp(`^${query}`, 'i');
     return this.addressModel
-      .find({ $text: { $search: query } })
-      .limit(10)
+      .find({
+        $or: [
+          { street: { $regex: regexQuery } },
+          { city: { $regex: regexQuery } },
+          { houseNumber: { $regex: regexQuery } },
+        ],
+      })
+      .limit(5)
       .exec();
   }
 }

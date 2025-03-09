@@ -1,16 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
-import { CsResCsvParserService } from '../modules/company-validator/services/cs-res-csv-parser.service';
+import { OsmParserService } from '../modules/address-validator/services/osm-parser.service';
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
-  const csvService = app.get(CsResCsvParserService);
+  const osmParserService = app.get(OsmParserService);
 
   try {
-    await csvService.parseAndSaveCSV('./data/res_data.csv');
-    console.log('CSV data successfully imported.');
+    await osmParserService.parseAndSaveOsm('./data/addresses.geojson');
+    console.log('OSM data successfully imported.');
   } catch (error) {
-    console.error('Error importing CSV:', error);
+    console.error('Error importing OSM:', error);
   } finally {
     await app.close();
   }
