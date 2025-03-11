@@ -5,14 +5,13 @@ import * as fs from 'fs';
 import * as JSONStream from 'jsonstream';
 
 export class OsmParserService {
-  jsonFilePath = 'czech-republic-latest.json';
   constructor(
     @InjectModel(Address.name) private addressModel: Model<Address>,
   ) {}
 
   async parseAndSaveOsm(filePath: string): Promise<void> {
     const stream = fs.createReadStream(filePath, { encoding: 'utf-8' });
-    const jsonStream = JSONStream.parse('features.*'); // Streamuje jednotlivé "features"
+    const jsonStream = JSONStream.parse('features.*');
 
     const batch: any[] = [];
     const BATCH_SIZE = 1000;
@@ -21,7 +20,7 @@ export class OsmParserService {
       jsonStream.on('data', async (feature: any) => {
         if (
           !feature.properties ||
-          !feature.properties['addr:street'] ||
+          !feature.properties['addr:housenumber'] ||
           (!feature.properties['addr:city'] &&
             !feature.properties['addr:place']) ||
           !feature.properties['addr:postcode'] ||
@@ -29,20 +28,24 @@ export class OsmParserService {
         )
           return;
 
+        const city =
+          feature.properties['addr:city'] || feature.properties['addr:place'];
+
         batch.push({
-          street: feature.properties['addr:street'],
-          houseNumber: feature.properties['addr:housenumber'] || null,
-          city:
-            feature.properties['addr:city'] || feature.properties['addr:place'],
-          postalCode: feature.properties['addr:postcode'],
+          street: feature.properties['addr:street'] || city,
+          hasStreetName: !!feature.properties['addr:street'],
+          houseNumber: feature.properties['addr:housenumber'],
+          city,
+          postalCode: feature.properties['addr:postcode'].replace(' ', ''),
           country: feature.properties['addr:country'],
+          ruianRef: feature.properties['ref:ruian:addr'],
         });
 
         if (batch.length >= BATCH_SIZE) {
           jsonStream.pause();
           await this.addressModel.insertMany(batch);
           console.log(`Uloženo ${BATCH_SIZE} adres.`);
-          batch.length = 0; // Vyprázdnění bufferu
+          batch.length = 0;
           jsonStream.resume();
         }
       });
