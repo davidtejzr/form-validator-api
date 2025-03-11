@@ -5,9 +5,10 @@ import { OsmParserService } from '../modules/address-validator/services/osm-pars
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule);
   const osmParserService = app.get(OsmParserService);
+  const filePath = './data-providers/osm/data/addresses.geojson';
 
   try {
-    await osmParserService.parseAndSaveOsm('./data/addresses.geojson');
+    await osmParserService.parseAndSaveOsm(filePath);
     console.log('OSM data successfully imported.');
   } catch (error) {
     console.error('Error importing OSM:', error);

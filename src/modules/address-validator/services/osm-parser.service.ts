@@ -10,8 +10,10 @@ export class OsmParserService {
   ) {}
 
   async parseAndSaveOsm(filePath: string): Promise<void> {
+    await this.addressModel.collection.drop();
     const stream = fs.createReadStream(filePath, { encoding: 'utf-8' });
     const jsonStream = JSONStream.parse('features.*');
+    let processed = 0;
 
     const batch: any[] = [];
     const BATCH_SIZE = 1000;
@@ -41,10 +43,11 @@ export class OsmParserService {
           ruianRef: feature.properties['ref:ruian:addr'],
         });
 
+        processed++;
         if (batch.length >= BATCH_SIZE) {
           jsonStream.pause();
           await this.addressModel.insertMany(batch);
-          console.log(`Uloženo ${BATCH_SIZE} adres.`);
+          console.log(`Processed ${processed} records...`);
           batch.length = 0;
           jsonStream.resume();
         }
@@ -53,14 +56,14 @@ export class OsmParserService {
       jsonStream.on('end', async () => {
         if (batch.length > 0) {
           await this.addressModel.insertMany(batch);
-          console.log(`Uloženo posledních ${batch.length} adres.`);
+          console.log(`Processed last ${batch.length} records.`);
         }
-        console.log('Import dokončen!');
+        console.log('OSM import completed successfully!');
         resolve();
       });
 
       jsonStream.on('error', (err: string) => {
-        console.error('Chyba při čtení GeoJSON souboru:', err);
+        console.error('Error when reading GeoJSON file:', err);
         reject(err);
       });
 

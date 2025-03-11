@@ -26,7 +26,7 @@ export class CsResCsvParserService {
         );
 
         processed++;
-        if (processed % 500 === 0)
+        if (processed % 1000 === 0)
           console.log(`Processed ${processed} records...`);
       }
     }
