@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CompanyValidatorService } from './company-validator.service';
 import { CsResCsvParserService } from './services/cs-res-csv-parser.service';
 import { Company, CompanySchema } from '../../schemas/company.schema';
+import { CsAresVatParserService } from './services/cs-ares-vat-parser.service';
 
 @Module({
   imports: [
@@ -12,7 +13,11 @@ import { Company, CompanySchema } from '../../schemas/company.schema';
     ConfigModule,
   ],
   controllers: [CompanyValidatorController],
-  providers: [CompanyValidatorService, CsResCsvParserService],
+  providers: [
+    CompanyValidatorService,
+    CsResCsvParserService,
+    CsAresVatParserService,
+  ],
   exports: [CsResCsvParserService],
 })
 export class CompanyValidatorModule {}

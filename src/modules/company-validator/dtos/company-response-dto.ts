@@ -11,5 +11,8 @@ export class CompanyResponseDto {
   dic?: string;
 
   @ApiPropertyOptional()
+  isVatPayer?: boolean;
+
+  @ApiPropertyOptional()
   companyName?: string;
 }

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import axios, { AxiosResponse } from 'axios';
-import { AresSearchResponseInterface } from '../../interfaces/ares-search-response.interface';
+import axios from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Company } from '../../schemas/company.schema';
 import { Model } from 'mongoose';
 import { CompanyResponseDto } from './dtos/company-response-dto';
+import { AresResponseDto } from './dtos/ares-response-dto';
 
 @Injectable()
 export class CompanyValidatorService {
@@ -27,10 +27,15 @@ export class CompanyValidatorService {
       return { isValid: false };
     }
 
+    if (firstResult.isVatPayer === null) {
+      void this.observeDicByIcoUsingAres(ico);
+    }
+
     return {
       isValid: true,
       ico: firstResult.ico,
       dic: firstResult.dic,
+      isVatPayer: firstResult.isVatPayer,
       companyName: firstResult.firma,
     };
   }
@@ -113,47 +118,23 @@ export class CompanyValidatorService {
     }));
   }
 
-  async regexSearchCompanyByName(
-    companyName: string,
-    limit = 5,
-  ): Promise<string[]> {
-    const result = await this.companyModel
-      .find({ firma: new RegExp(companyName, 'i') })
-      .collation({ locale: 'cs', strength: 1 })
-      .limit(limit)
-      .exec();
-    return result.map((company) => company.firma);
-  }
-
-  async searchCompanyByNameUsingAres(companyName: string): Promise<string[]> {
+  async observeDicByIcoUsingAres(ico: string): Promise<void> {
     const response = await axios
-      .post<any, AxiosResponse<AresSearchResponseInterface, any>>(
-        `https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/vyhledat`,
-        {
-          pocet: 10,
-          obchodniJmeno: companyName,
-        },
-      )
-      .catch((error) => {
-        console.error('Error fetching data from ARES: ', error);
-      });
-    if (response) {
-      return response.data.ekonomickeSubjekty.map(
-        (company) => `${company.obchodniJmeno} | ${company.ico}`,
-      );
-    }
-    return [];
-  }
-
-  async hasValidIcoUsingAres(ico: string): Promise<boolean> {
-    if (ico.length !== 8) {
-      return false;
-    }
-    const response = await axios
-      .get(
+      .get<AresResponseDto>(
         `https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/${ico}`,
       )
       .catch(() => {});
-    return !!response;
+
+    if (response && response.status === 200) {
+      await this.companyModel.updateOne(
+        { ico },
+        {
+          $set: {
+            dic: response.data.dic ?? null,
+            isVatPayer: !!response.data.dic,
+          },
+        },
+      );
+    }
   }
 }

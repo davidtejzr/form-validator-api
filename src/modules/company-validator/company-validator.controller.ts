@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { CompanyValidatorService } from './company-validator.service';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { CompanyResponseDto } from './dtos/company-response-dto';
@@ -8,6 +8,7 @@ export class CompanyValidatorController {
   constructor(private readonly companyValidator: CompanyValidatorService) {}
 
   @Post('ico/validate')
+  @HttpCode(200)
   @ApiOperation({
     summary: 'Company ICO validation, returns company details',
   })
@@ -70,6 +71,7 @@ export class CompanyValidatorController {
   }
 
   @Post('dic/validate')
+  @HttpCode(200)
   @ApiOperation({
     summary: 'Company DIC validation, returns company details',
   })

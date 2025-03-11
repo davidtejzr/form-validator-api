@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "import-cs-res-csv": "ts-node src/scripts/import-cs-res-csv.ts",
+    "import-cs-res-csv": "ts-node src/scripts/import-cs-res.ts",
+    "import-cs-ares-vat": "ts-node src/scripts/import-cs-ares-vat.ts",
     "import-cs-osm": "ts-node src/scripts/import-cs-osm.ts"
   },
   "dependencies": {

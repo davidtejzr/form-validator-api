@@ -21,7 +21,13 @@ export class CsResCsvParserService {
       if (row.DDATZAN === '' && row.FIRMA !== '') {
         await this.companyModel.updateOne(
           { ico: row.ICO },
-          { $set: { ico: row.ICO, firma: row.FIRMA, lastUpdate: now } },
+          {
+            $set: {
+              ico: row.ICO,
+              firma: row.FIRMA,
+              lastUpdate: now,
+            },
+          },
           { upsert: true },
         );
 

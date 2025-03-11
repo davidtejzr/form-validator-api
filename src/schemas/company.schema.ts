@@ -9,6 +9,9 @@ export class Company extends Document {
   @Prop({ required: false, index: true })
   dic: string;
 
+  @Prop({ required: false, default: null })
+  isVatPayer: boolean;
+
   @Prop({ required: true })
   firma: string;
 
