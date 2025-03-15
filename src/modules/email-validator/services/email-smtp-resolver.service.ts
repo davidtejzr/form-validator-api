@@ -3,7 +3,7 @@ import * as net from 'node:net';
 
 @Injectable()
 export class EmailSmtpResolverService {
-  async isEmailDeliverable(
+  async isEmailUndeliverable(
     exchange: string,
     email: string,
   ): Promise<boolean | 'undeclared'> {
@@ -46,7 +46,7 @@ export class EmailSmtpResolverService {
           resolve('undeclared');
         }
 
-        resolve(false);
+        resolve(true);
       });
 
       socket.on('success', () => {
@@ -61,7 +61,7 @@ export class EmailSmtpResolverService {
           console.log('False positive result.');
           resolve('undeclared');
         }
-        resolve(true);
+        resolve(false);
       });
 
       const commands = [

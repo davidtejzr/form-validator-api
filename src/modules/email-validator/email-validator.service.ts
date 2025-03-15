@@ -105,16 +105,16 @@ export class EmailValidatorService {
       return EmailValidationStatus.BLACKLISTED_DOMAIN;
     }
 
-    const isDeliverable = await this.smtpResolverService.isEmailDeliverable(
+    const isUndeliverable = await this.smtpResolverService.isEmailUndeliverable(
       mxRecord,
       emailInstance.email,
     );
-    this.partialResults.undeliverableAddress = !isDeliverable;
-    if (!isDeliverable) {
-      return EmailValidationStatus.UNDELIVERABLE_ADDRESS;
-    }
-    if (isDeliverable === 'undeclared') {
+    this.partialResults.undeliverableAddress = isUndeliverable;
+    if (isUndeliverable === 'undeclared') {
       return EmailValidationStatus.UNDECLARED_ADDRESS;
+    }
+    if (isUndeliverable) {
+      return EmailValidationStatus.UNDELIVERABLE_ADDRESS;
     }
 
     return EmailValidationStatus.VALID;
