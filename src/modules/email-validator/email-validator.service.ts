@@ -31,7 +31,7 @@ export class EmailValidatorService {
       noMxRecords: null,
       blacklistedDomain: null,
       disposableAddress: null,
-      deliverableAddress: null,
+      undeliverableAddress: null,
     };
     if (!this.formatValidatorService.acceptRfc5322Standard(email)) {
       this.partialResults.invalidFormat = true;
@@ -49,8 +49,8 @@ export class EmailValidatorService {
             emailInstance.blacklistedDomain,
           ),
           disposableAddress: emailInstance.disposableAddress,
-          deliverableAddress: this.parseMixedType(
-            emailInstance.deliverableAddress,
+          undeliverableAddress: this.parseMixedType(
+            emailInstance.undeliverableAddress,
           ),
         });
         await this.cacheService.checkAndSaveDomain(
@@ -109,7 +109,7 @@ export class EmailValidatorService {
       mxRecord,
       emailInstance.email,
     );
-    this.partialResults.deliverableAddress = isDeliverable;
+    this.partialResults.undeliverableAddress = !isDeliverable;
     if (!isDeliverable) {
       return EmailValidationStatus.UNDELIVERABLE_ADDRESS;
     }

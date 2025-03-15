@@ -46,7 +46,7 @@ export class EmailCacheService {
       noMxRecords,
       blacklistedDomain,
       disposableAddress,
-      deliverableAddress,
+      undeliverableAddress,
     } = partialResults;
 
     await this.emailModel.updateOne(
@@ -57,7 +57,7 @@ export class EmailCacheService {
           noMxRecords,
           blacklistedDomain,
           disposableAddress,
-          deliverableAddress,
+          undeliverableAddress,
           updatedAt: new Date(),
         },
       },

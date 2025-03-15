@@ -32,7 +32,7 @@ export class Email extends Document {
   disposableAddress: boolean;
 
   @Prop({ default: null, type: String })
-  deliverableAddress: boolean | 'undeclared';
+  undeliverableAddress: boolean | 'undeclared';
 }
 
 export const EmailSchema = SchemaFactory.createForClass(Email);

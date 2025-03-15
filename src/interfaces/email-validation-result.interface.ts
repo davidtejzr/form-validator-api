@@ -4,5 +4,5 @@ export interface EmailValidationResultInterface {
   noMxRecords: boolean | null;
   blacklistedDomain: boolean | 'failed' | null;
   disposableAddress: boolean | null;
-  deliverableAddress: boolean | 'undeclared' | null;
+  undeliverableAddress: boolean | 'undeclared' | null;
 }
