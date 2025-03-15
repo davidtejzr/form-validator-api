@@ -12,11 +12,15 @@ export class CsAresVatParserService {
   ) {}
 
   async observeAndSaveVats(): Promise<void> {
+    const missingVatsCount = await this.companyModel.countDocuments({
+      isVatPayer: null,
+    });
+    console.log(`Found ${missingVatsCount} companies with missing VATs...`);
+
     const batchSize = 100;
     const delay = 15000; // 15 seconds
     const cursor = this.companyModel.find({ isVatPayer: null }).cursor();
     let processed = 0;
-
     let batch = [];
     for (
       let company = await cursor.next();
