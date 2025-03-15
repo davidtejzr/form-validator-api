@@ -8,7 +8,7 @@
   </head>
 
   <body>
-    <h1>Základní validace emailové adresy</h1>
+    <h1>Základní validace emailových adres</h1>
     <div class="email-wrapper">
       <input
         id="email"
@@ -19,10 +19,10 @@
       />
     </div>
 
-    <h1>Podrobná validace emailové adresy</h1>
+    <h1>Podrobná validace emailových adres</h1>
     <div class="email-wrapper">
       <input
-        id="email-detailed"
+        id="email-advanced"
         aria-label="email"
         placeholder="E-mail"
         autocomplete="off"
@@ -49,6 +49,61 @@
       <div id="email-advanced-result-is-deliverable" class="email-advanced-result-item-wrapper">
         <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
         <span>Emailová schránka je doručitelná</span>
+      </div>
+    </div>
+
+    <h1>Validace firem</h1>
+    <div class="form-wrapper">
+      <input
+        id="company-name"
+        aria-label="company-name"
+        placeholder="Název firmy"
+        autocomplete="off"
+        data-company-validator-name
+      />
+      <div class="row-wrapper">
+        <input
+          id="company-ico"
+          aria-label="ico"
+          placeholder="IČO"
+          autocomplete="off"
+          data-company-validator-ico
+        />
+        <input
+          id="company-vat"
+          aria-label="vat"
+          placeholder="DIČ"
+          autocomplete="off"
+          data-company-validator-vat
+        />
+      </div>
+    </div>
+
+    <h1>Validace adres</h1>
+    <div class="form-wrapper">
+        <input
+          id="address-street"
+          aria-label="street"
+          placeholder="Ulice a číslo popisné"
+          autocomplete="off"
+          data-address-validator-street
+        />
+      <div class="row-wrapper">
+        <input
+          id="address-city"
+          aria-label="city"
+          placeholder="Obec"
+          autocomplete="off"
+          data-address-validator-city
+        />
+        <input
+          id="address-zip"
+          aria-label="zip"
+          placeholder="PSČ"
+          autocomplete="off"
+          data-address-validator-zip
+          maxlength="6"
+        />
       </div>
     </div>
   </body>

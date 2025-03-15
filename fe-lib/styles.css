@@ -1,12 +1,25 @@
 /* Custom styles */
 body {
     font-family: Tahoma, sans-serif;
-    max-width: 800px;
+    max-width: 600px;
     margin: auto;
+    min-height: 150vh;
 }
 
 h1:not(:nth-child(1)) {
     margin-top: 4rem;
+}
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.2rem;
+}
+
+.row-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
 }
 
 .email-wrapper {
@@ -45,7 +58,6 @@ input {
     font-size: 16px;
     background-color: #f5f5f5;
     position: relative;
-    z-index: 1;
 }
 
 input:focus {
@@ -64,7 +76,6 @@ input::placeholder {
     width: 2rem;
     height: 2rem;
     background-color: #f5f5f5;
-    z-index: 1;
 }
 
 .validator_input-adornment {
@@ -74,7 +85,6 @@ input::placeholder {
     transform: translateY(-50%);
     width: 2rem;
     height: 2rem;
-    z-index: 1;
 }
 
 .validator_success {
@@ -102,11 +112,11 @@ input::placeholder {
 .validator_autocomplete-wrapper {
     width: 100%;
     position: absolute;
-    top: 2rem;
-    padding-top: 1rem;
+    top: 4rem;
     background-color: whitesmoke;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     border-radius: 5px;
+    z-index: 1;
 }
 
 .validator_autocomplete-ul {
@@ -128,4 +138,9 @@ input::placeholder {
 .validator_autocomplete-li:hover {
     background-color: lightgray;
     cursor: pointer;
+}
+
+.validator_autocomplete-li:hover:nth-child(1) {
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
 }

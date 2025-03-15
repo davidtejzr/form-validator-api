@@ -1,5 +1,6 @@
 import { debounceValidate, initWrapper } from './input-helpers.js';
 import { validateEmail, validateEmailAdvanced } from './email-validator.js';
+import { validateCompanyDic, validateCompanyIco } from './company-validator.js';
 
 document.addEventListener('DOMContentLoaded', function () {
   /* Email validator */
@@ -7,9 +8,6 @@ document.addEventListener('DOMContentLoaded', function () {
   initWrapper(emailInput);
   emailInput.addEventListener('input', (e) =>
     debounceValidate(e.target, () => validateEmail(e.target)),
-  );
-  emailInput.addEventListener('change', (e) =>
-    debounceValidate(e.target, () => validateEmail(e.target, false)),
   );
 
   /* Advanced email validator */
@@ -20,7 +18,40 @@ document.addEventListener('DOMContentLoaded', function () {
   emailInput2.addEventListener('input', (e) =>
     debounceValidate(e.target, () => validateEmailAdvanced(e.target)),
   );
-  emailInput2.addEventListener('change', (e) =>
-    debounceValidate(e.target, () => validateEmailAdvanced(e.target, false)),
+
+  /* Company validator */
+  const companyNameInput = document.querySelector(
+    'input[data-company-validator-name]',
   );
+  initWrapper(companyNameInput);
+
+  const companyIcoInput = document.querySelector(
+    'input[data-company-validator-ico]',
+  );
+  initWrapper(companyIcoInput);
+  companyIcoInput.addEventListener('input', (e) =>
+    debounceValidate(e.target, () => validateCompanyIco(e.target)),
+  );
+
+  const companyVatInput = document.querySelector(
+    'input[data-company-validator-vat]',
+  );
+  initWrapper(companyVatInput);
+  companyVatInput.addEventListener('input', (e) =>
+    debounceValidate(e.target, () => validateCompanyDic(e.target)),
+  );
+
+  /* Address validator */
+  const addressStreetInput = document.querySelector(
+    'input[data-address-validator-street]',
+  );
+  initWrapper(addressStreetInput);
+  const addressCityInput = document.querySelector(
+    'input[data-address-validator-city]',
+  );
+  initWrapper(addressCityInput);
+  const addressZipInput = document.querySelector(
+    'input[data-address-validator-zip]',
+  );
+  initWrapper(addressZipInput, false);
 });

@@ -1,10 +1,16 @@
+import { showPartialResults } from './email-validator.js';
+
 const debounceTimers = new Map();
 
-function initWrapper(element) {
+function initWrapper(element, fullWidth = true) {
   const wrapper = document.createElement('div');
   wrapper.style.position = 'relative';
   element.parentNode.appendChild(wrapper);
   wrapper.appendChild(element);
+
+  if (fullWidth) {
+    wrapper.style.width = '100%';
+  }
 
   const messageWrapper = document.createElement('span');
   messageWrapper.className = 'validator_message';
@@ -33,6 +39,16 @@ function resetValidation(input) {
   const imgElements = wrapper.querySelectorAll('.validator_input-adornment');
   imgElements.forEach((img) => img.remove());
   wrapper.querySelector('.validator_message').innerText = '';
+
+  if (input.id === 'email-advanced') {
+    showPartialResults(input, {
+      invalidFormat: null,
+      noMxRecords: null,
+      disposableAddress: null,
+      blacklistedDomain: null,
+      undeliverableAddress: null,
+    });
+  }
 }
 
 function showLoader(input) {

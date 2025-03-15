@@ -4,8 +4,9 @@ import {
   showAutocomplete,
   showLoader,
   hideLoader,
+  debounceValidate,
 } from './input-helpers.js';
-const apiUrl = 'http://localhost:3000';
+import { apiUrl } from './config.js';
 
 function validateEmail(input, autocompleteEnabled = true) {
   const email = input.value;
@@ -57,7 +58,7 @@ function validateEmailAdvanced(input, autocompleteEnabled = true) {
   showLoader(input);
 
   if (autocompleteEnabled && email.split('@').length === 2) {
-    resolveEmailAutocomplete(input);
+    resolveEmailAutocomplete(input, true);
   }
 
   fetch(`${apiUrl}/email-validator/validate-advanced`, {
@@ -102,7 +103,7 @@ function validateEmailAdvanced(input, autocompleteEnabled = true) {
   });
 }
 
-function resolveEmailAutocomplete(input) {
+function resolveEmailAutocomplete(input, advanced = false) {
   const id = input.id + '_autocomplete';
   const emailUsername = input.value.split('@')[0];
 
@@ -129,6 +130,13 @@ function resolveEmailAutocomplete(input) {
             listItem.addEventListener('click', () => {
               input.value = `${emailUsername}@${data[value]}`;
               autocompleteWrapper.remove();
+              if (advanced) {
+                debounceValidate(input, () =>
+                  validateEmailAdvanced(input, false),
+                );
+              } else {
+                debounceValidate(input, () => validateEmail(input, false));
+              }
             });
           }
         }
@@ -226,4 +234,4 @@ function parsePartialResult(element, key, value) {
   }
 }
 
-export { validateEmail, validateEmailAdvanced };
+export { validateEmail, validateEmailAdvanced, showPartialResults };
