@@ -106,6 +106,7 @@ function validateEmailAdvanced(input, autocompleteEnabled = true) {
 function resolveEmailAutocomplete(input, advanced = false) {
   const id = input.id + '_autocomplete';
   const emailUsername = input.value.split('@')[0];
+  const domain = input.value.split('@')[1];
 
   if (document.getElementById(id)) {
     const autocompleteInstance = document.getElementById(id);
@@ -120,11 +121,13 @@ function resolveEmailAutocomplete(input, advanced = false) {
     if (result.status === 200) {
       result.json().then((data) => {
         if (data.length > 0) {
+          if (data.length === 1 && data[0] === domain) {
+            return;
+          }
           let autocompleteWrapper = showAutocomplete(input, id);
           for (const value in data) {
             const listItem = document.createElement('li');
             listItem.className = 'validator_autocomplete-li';
-
             listItem.innerText = data[value];
             autocompleteWrapper.childNodes[0].appendChild(listItem);
             listItem.addEventListener('click', () => {

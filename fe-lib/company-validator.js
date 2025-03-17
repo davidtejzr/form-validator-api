@@ -82,6 +82,9 @@ function resolveIcoAutocomplete(input) {
     if (result.status === 200) {
       result.json().then((data) => {
         if (data.length > 0) {
+          if (data.length === 1 && data[0]['ico'] === input.value) {
+            return;
+          }
           let autocompleteWrapper = showAutocomplete(input, id);
           for (const value in data) {
             const listItem = document.createElement('li');
@@ -116,6 +119,9 @@ function resolveDicAutocomplete(input) {
     if (result.status === 200) {
       result.json().then((data) => {
         if (data.length > 0) {
+          if (data.length === 1 && data[0]['ico'] === input.value) {
+            return;
+          }
           let autocompleteWrapper = showAutocomplete(input, id);
           for (const value in data) {
             const listItem = document.createElement('li');
