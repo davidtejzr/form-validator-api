@@ -1,13 +1,62 @@
 /* Custom styles */
 body {
     font-family: Tahoma, sans-serif;
-    max-width: 600px;
+    max-width: 1400px;
     margin: auto;
     min-height: 150vh;
 }
 
-h1:not(:nth-child(1)) {
+h1 {
+    margin-block: 0.2rem;
+}
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+h2:not(:nth-child(1)) {
     margin-top: 4rem;
+}
+
+.gray {
+    background-color: gray;
+    color: white;
+}
+
+.blue {
+    background-color: rgb(38, 166, 154);
+    color: white;
+}
+
+.headline-wrapper {
+    margin-top: 1rem;
+    display: flex;
+    align-items: start;
+    gap: 0.3rem;
+}
+
+.badge {
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.content-wrapper {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.box-wrapper {
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid #f5f5f5;
+    border-radius: 8px;
+    width: 40rem;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
 }
 
 .form-wrapper {
@@ -22,8 +71,13 @@ h1:not(:nth-child(1)) {
     gap: 1.2rem;
 }
 
-.email-wrapper {
-    width: 400px;
+.email-input-advanced-wrapper {
+    width: 20rem;
+}
+
+.email-advanced-wrapper {
+    display: flex;
+    gap: 1rem;
 }
 
 #email-advanced-result-wrapper {
@@ -104,7 +158,7 @@ input::placeholder {
 
 .validator_message {
     position: absolute;
-    bottom: -18px;
+    bottom: -0.5rem;
     left: 2px;
     font-size: 0.8em;
 }

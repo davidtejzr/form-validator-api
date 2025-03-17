@@ -8,103 +8,124 @@
   </head>
 
   <body>
-    <h1>Základní validace emailových adres</h1>
-    <div class="email-wrapper">
-      <input
-        id="email"
-        aria-label="email"
-        placeholder="E-mail"
-        autocomplete="off"
-        data-email-validator
-      />
+    <div class="headline-wrapper">
+      <h1>Form Validator API - Demo</h1>
+      <div class="badge gray">1.0</div>
+      <div class="badge blue">DEMO</div>
     </div>
 
-    <h1>Podrobná validace emailových adres</h1>
-    <div class="email-wrapper">
-      <input
-        id="email-advanced"
-        aria-label="email"
-        placeholder="E-mail"
-        autocomplete="off"
-        data-email-validator-advanced
-      />
-    </div>
-    <div id="email-advanced-result-wrapper">
-      <div id="email-advanced-result-has-valid-format" class="email-advanced-result-item-wrapper">
-        <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg"  alt="has valid format"/>
-        <span>Email je v platném formátu</span>
-      </div>
-      <div id="email-advanced-result-has-mx-records" class="email-advanced-result-item-wrapper">
-        <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
-        <span>Doména je schopna přijímat emaily</span>
-      </div>
-      <div id="email-advanced-result-is-disposable" class="email-advanced-result-item-wrapper">
-        <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
-        <span>Nejedná se o jednorázovou adresu</span>
-      </div>
-      <div id="email-advanced-result-is-on-blacklist" class="email-advanced-result-item-wrapper">
-        <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
-        <span>Doména není na blacklistu</span>
-      </div>
-      <div id="email-advanced-result-is-deliverable" class="email-advanced-result-item-wrapper">
-        <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
-        <span>Emailová schránka je doručitelná</span>
-      </div>
-    </div>
+    <div class="content-wrapper">
 
-    <h1>Validace firem</h1>
-    <div class="form-wrapper">
-      <input
-        id="company-name"
-        aria-label="company-name"
-        placeholder="Název firmy"
-        autocomplete="off"
-        data-company-validator-name
-      />
-      <div class="row-wrapper">
-        <input
-          id="company-ico"
-          aria-label="ico"
-          placeholder="IČO"
-          autocomplete="off"
-          data-company-validator-ico
-        />
-        <input
-          id="company-vat"
-          aria-label="vat"
-          placeholder="DIČ"
-          autocomplete="off"
-          data-company-validator-vat
-        />
+      <div class="box-wrapper">
+        <h2>Základní validace emailových adres</h2>
+        <div class="form-wrapper">
+          <input
+            id="email"
+            aria-label="email"
+            placeholder="E-mail"
+            autocomplete="off"
+            data-email-validator
+          />
+        </div>
       </div>
-    </div>
 
-    <h1>Validace adres</h1>
-    <div class="form-wrapper">
-        <input
-          id="address-street"
-          aria-label="street"
-          placeholder="Ulice a číslo popisné"
-          autocomplete="off"
-          data-address-validator-street
-        />
-      <div class="row-wrapper">
-        <input
-          id="address-city"
-          aria-label="city"
-          placeholder="Obec"
-          autocomplete="off"
-          data-address-validator-city
-        />
-        <input
-          id="address-zip"
-          aria-label="zip"
-          placeholder="PSČ"
-          autocomplete="off"
-          data-address-validator-zip
-          maxlength="6"
-        />
+      <div class="box-wrapper">
+        <h2>Podrobná validace emailových adres</h2>
+        <div class="email-advanced-wrapper">
+          <div class="email-input-advanced-wrapper">
+            <input
+              id="email-advanced"
+              aria-label="email"
+              placeholder="E-mail"
+              autocomplete="off"
+              data-email-validator-advanced
+            />
+          </div>
+          <div id="email-advanced-result-wrapper">
+            <div id="email-advanced-result-has-valid-format" class="email-advanced-result-item-wrapper">
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg"  alt="has valid format"/>
+              <span>Email je v platném formátu</span>
+            </div>
+            <div id="email-advanced-result-has-mx-records" class="email-advanced-result-item-wrapper">
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <span>Doména je schopna přijímat emaily</span>
+            </div>
+            <div id="email-advanced-result-is-disposable" class="email-advanced-result-item-wrapper">
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <span>Nejedná se o jednorázovou adresu</span>
+            </div>
+            <div id="email-advanced-result-is-on-blacklist" class="email-advanced-result-item-wrapper">
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <span>Doména není na blacklistu</span>
+            </div>
+            <div id="email-advanced-result-is-deliverable" class="email-advanced-result-item-wrapper">
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <span>Emailová schránka je doručitelná</span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <div class="box-wrapper">
+        <h2>Validace firem</h2>
+        <div class="form-wrapper">
+          <input
+            id="company-name"
+            aria-label="company-name"
+            placeholder="Název firmy"
+            autocomplete="off"
+            data-company-validator-name
+          />
+          <div class="row-wrapper">
+            <input
+              id="company-ico"
+              aria-label="ico"
+              placeholder="IČO"
+              autocomplete="off"
+              data-company-validator-ico
+            />
+            <input
+              id="company-vat"
+              aria-label="vat"
+              placeholder="DIČ"
+              autocomplete="off"
+              data-company-validator-vat
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="box-wrapper">
+        <h2>Validace adres</h2>
+        <div class="form-wrapper">
+          <input
+            id="address-street"
+            aria-label="street"
+            placeholder="Ulice a číslo popisné"
+            autocomplete="off"
+            data-address-validator-street
+          />
+        <div class="row-wrapper">
+          <input
+            id="address-city"
+            aria-label="city"
+            placeholder="Obec"
+            autocomplete="off"
+            data-address-validator-city
+          />
+          <input
+            id="address-zip"
+            aria-label="zip"
+            placeholder="PSČ"
+            autocomplete="off"
+            data-address-validator-zip
+            maxlength="6"
+          />
+        </div>
+      </div>
+
+      </div>
+
     </div>
   </body>
 </html>
