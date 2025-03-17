@@ -7,6 +7,35 @@ import {
 } from './input-helpers.js';
 import { apiUrl } from './config.js';
 
+function validateCompanyName(input, autocompleteEnabled = true) {
+  const companyName = input.value;
+  showLoader(input);
+
+  if (autocompleteEnabled) {
+    resolveCompanyNameAutocomplete(input);
+  }
+
+  fetch(`${apiUrl}/company-validator/company-name/validate`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({ companyName }),
+  }).then((result) => {
+    hideLoader(input);
+    if (result.status === 200) {
+      result.json().then((data) => {
+        if (data.isValid) {
+          setCompanyData(data);
+        } else {
+          input.classList.add('validator_error');
+          showResultBadge(input, 'error');
+        }
+      });
+    }
+  });
+}
+
 function validateCompanyIco(input, autocompleteEnabled = true) {
   const ico = input.value;
   showLoader(input);
@@ -25,7 +54,6 @@ function validateCompanyIco(input, autocompleteEnabled = true) {
     hideLoader(input);
     if (result.status === 200) {
       result.json().then((data) => {
-        console.log(data);
         if (data.isValid) {
           setCompanyData(data);
         } else {
@@ -60,6 +88,43 @@ function validateCompanyDic(input, autocompleteEnabled = true) {
         } else {
           input.classList.add('validator_error');
           showResultBadge(input, 'error');
+        }
+      });
+    }
+  });
+}
+
+function resolveCompanyNameAutocomplete(input) {
+  const id = input.id + '_autocomplete';
+
+  if (document.getElementById(id)) {
+    const autocompleteInstance = document.getElementById(id);
+    autocompleteInstance.remove();
+  }
+
+  const params = new URLSearchParams();
+  params.append('companyName', input.value);
+  fetch(`${apiUrl}/company-validator/company-name/autocomplete?${params}`, {
+    method: 'GET',
+  }).then((result) => {
+    if (result.status === 200) {
+      result.json().then((data) => {
+        if (data.length > 0) {
+          if (data.length === 1 && data[0]['companyName'] === input.value) {
+            return;
+          }
+          let autocompleteWrapper = showAutocomplete(input, id);
+          for (const value in data) {
+            const listItem = document.createElement('li');
+            listItem.className = 'validator_autocomplete-li';
+            listItem.innerText = data[value]['companyName'];
+            autocompleteWrapper.childNodes[0].appendChild(listItem);
+            listItem.addEventListener('click', () => {
+              input.value = data[value]['companyName'];
+              autocompleteWrapper.remove();
+              debounceValidate(input, () => validateCompanyName(input, false));
+            });
+          }
         }
       });
     }
@@ -159,4 +224,4 @@ function setCompanyData(data) {
   vatInput.value = data.dic;
 }
 
-export { validateCompanyIco, validateCompanyDic };
+export { validateCompanyName, validateCompanyIco, validateCompanyDic };
