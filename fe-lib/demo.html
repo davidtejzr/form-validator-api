@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="cs">
   <head>
     <meta charset="UTF-8">
-    <title>DEMO - Inteligentní validace webových formulářů</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Demo of form Validator API" />
+    <title>Form Validator API - Demo</title>
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <script src="index.js" type="module"></script>
   </head>
@@ -43,23 +45,23 @@
           </div>
           <div id="email-advanced-result-wrapper">
             <div id="email-advanced-result-has-valid-format" class="email-advanced-result-item-wrapper">
-              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg"  alt="has valid format"/>
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" alt="state indicator"/>
               <span>Email je v platném formátu</span>
             </div>
             <div id="email-advanced-result-has-mx-records" class="email-advanced-result-item-wrapper">
-              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" alt="state indicator" />
               <span>Doména je schopna přijímat emaily</span>
             </div>
             <div id="email-advanced-result-is-disposable" class="email-advanced-result-item-wrapper">
-              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" alt="state indicator" />
               <span>Nejedná se o jednorázovou adresu</span>
             </div>
             <div id="email-advanced-result-is-on-blacklist" class="email-advanced-result-item-wrapper">
-              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" alt="state indicator" />
               <span>Doména není na blacklistu</span>
             </div>
             <div id="email-advanced-result-is-deliverable" class="email-advanced-result-item-wrapper">
-              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" />
+              <img class="email-advanced-result-image-wrapper" src="public/img/pending.svg" alt="state indicator" />
               <span>Emailová schránka je doručitelná</span>
             </div>
           </div>

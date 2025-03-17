@@ -231,7 +231,7 @@ function parsePartialResult(element, key, value) {
     default:
       img.src = 'public/img/pending.svg';
       text.style.fontWeight = 'normal';
-      text.style.color = '#858585';
+      text.style.color = '#575757';
       text.innerText = PartialResultMessages[key][false];
       break;
   }

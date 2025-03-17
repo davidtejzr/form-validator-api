@@ -20,17 +20,17 @@ h2:not(:nth-child(1)) {
 }
 
 .gray {
-    background-color: gray;
+    background-color: #575757;
     color: white;
 }
 
 .blue {
-    background-color: rgb(38, 166, 154);
+    background-color: #095D50;
     color: white;
 }
 
 .headline-wrapper {
-    margin-top: 1rem;
+    margin-top: 4rem;
     display: flex;
     align-items: start;
     gap: 0.3rem;
@@ -92,7 +92,7 @@ h2:not(:nth-child(1)) {
     align-items: center;
     gap: 0.5rem;
     font-size: 14px;
-    color: #858585;
+    color: #575757;
 }
 
 .email-advanced-result-image-wrapper {
