@@ -13,3 +13,9 @@ export class Address extends Document {
 }
 
 export const AddressSchema = SchemaFactory.createForClass(Address);
+AddressSchema.index({ city: 1 }, { collation: { locale: 'cs', strength: 1 } });
+AddressSchema.index(
+  { street: 1, houseNumber: 1 },
+  { collation: { locale: 'cs', strength: 1 } },
+);
+AddressSchema.index({ postalCode: 1 });

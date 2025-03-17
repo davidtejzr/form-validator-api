@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { EmailValidatorService } from './email-validator.service';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { EmailCacheService } from './services/email-cache.service';
@@ -145,7 +153,7 @@ export class EmailValidatorController {
   })
   async getEmailDomainSuggestions(
     @Query('email') email: string,
-    @Query('limit') limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ): Promise<string[]> {
     if (
       !email ||

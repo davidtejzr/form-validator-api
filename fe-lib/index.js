@@ -5,6 +5,11 @@ import {
   validateCompanyIco,
   validateCompanyName,
 } from './company-validator.js';
+import {
+  resolveAddressCityAutocomplete,
+  resolveAddressStreetHouseNumberAutocomplete,
+  resolveAddressZipAutocomplete,
+} from './address-validator.js';
 
 document.addEventListener('DOMContentLoaded', function () {
   /* Email validator */
@@ -53,12 +58,25 @@ document.addEventListener('DOMContentLoaded', function () {
     'input[data-address-validator-street]',
   );
   initWrapper(addressStreetInput);
+  addressStreetInput.addEventListener('input', (e) =>
+    debounceValidate(e.target, () =>
+      resolveAddressStreetHouseNumberAutocomplete(e.target),
+    ),
+  );
+
   const addressCityInput = document.querySelector(
     'input[data-address-validator-city]',
   );
   initWrapper(addressCityInput);
+  addressCityInput.addEventListener('input', (e) =>
+    debounceValidate(e.target, () => resolveAddressCityAutocomplete(e.target)),
+  );
+
   const addressZipInput = document.querySelector(
     'input[data-address-validator-zip]',
   );
   initWrapper(addressZipInput, false);
+  addressZipInput.addEventListener('input', (e) =>
+    debounceValidate(e.target, () => resolveAddressZipAutocomplete(e.target)),
+  );
 });

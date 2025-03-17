@@ -67,7 +67,7 @@ export class AddressValidatorController {
   })
   streetAutocomplete(
     @Query('streetAndHouseNumber') streetAndHouseNumber: string,
-    @Query('limit') limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ) {
     return this.addressValidatorService.streetAndHouseNumberSearch(
       streetAndHouseNumber,
@@ -104,7 +104,7 @@ export class AddressValidatorController {
   })
   cityAutocomplete(
     @Query('city') city: string,
-    @Query('limit', ParseIntPipe) limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ) {
     return this.addressValidatorService.citySearch(city, limit);
   }
@@ -138,7 +138,7 @@ export class AddressValidatorController {
   })
   postalCodeAutocomplete(
     @Query('postalCode') postalCode: string,
-    @Query('limit', ParseIntPipe) limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ) {
     return this.addressValidatorService.postalCodeSearch(postalCode, limit);
   }
@@ -200,7 +200,7 @@ export class AddressValidatorController {
   })
   fullAddressAutocomplete(
     @Query('fullAddress') fullAddress: string,
-    @Query('limit') limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ) {
     return this.addressValidatorService.fullAddressSearch(fullAddress, limit);
   }

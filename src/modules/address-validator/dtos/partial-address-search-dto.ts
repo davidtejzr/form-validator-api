@@ -1,7 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class PartialAddressSearchDto {
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     minLength: 1,
     maxLength: 50,
@@ -9,13 +9,21 @@ export class PartialAddressSearchDto {
   })
   street: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     type: String,
     minLength: 1,
     maxLength: 50,
     default: '2172/15',
   })
   houseNumber: string;
+
+  @ApiPropertyOptional({
+    type: String,
+    minLength: 5,
+    maxLength: 100,
+    default: '17. listopadu 2172/15',
+  })
+  streetAndHouseNumber: string;
 
   @ApiProperty({
     type: String,

@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CompanyValidatorService } from './company-validator.service';
 import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { CompanyResponseDto } from './dtos/company-response-dto';
@@ -65,7 +73,7 @@ export class CompanyValidatorController {
   })
   async searchCompanyByIco(
     @Query('ico') ico: string,
-    @Query('limit') limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ): Promise<CompanyResponseDto[]> {
     return this.companyValidator.prefixSearchCompanyByIco(ico, limit);
   }
@@ -128,7 +136,7 @@ export class CompanyValidatorController {
   })
   async searchCompanyByDic(
     @Query('dic') dic: string,
-    @Query('limit') limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ): Promise<CompanyResponseDto[]> {
     return this.companyValidator.prefixSearchCompanyByDic(dic, limit);
   }
@@ -191,7 +199,7 @@ export class CompanyValidatorController {
   })
   async searchCompanyByName(
     @Query('companyName') companyName: string,
-    @Query('limit') limit: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
   ): Promise<CompanyResponseDto[]> {
     return this.companyValidator.prefixSearchCompanyByName(companyName, limit);
   }
