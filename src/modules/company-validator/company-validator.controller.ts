@@ -133,6 +133,35 @@ export class CompanyValidatorController {
     return this.companyValidator.prefixSearchCompanyByDic(dic, limit);
   }
 
+  @Post('company-name/validate')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Company name validation, returns company details',
+  })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        companyName: {
+          type: 'string',
+          default: 'David Tejzr',
+          minLength: 1,
+          maxLength: 2000,
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns company details if company name is valid',
+    type: CompanyResponseDto,
+  })
+  async validateCompanyByName(
+    @Body('companyName') companyName: string,
+  ): Promise<CompanyResponseDto> {
+    return this.companyValidator.hasValidCompanyName(companyName);
+  }
+
   @Get('company-name/autocomplete')
   @ApiOperation({
     summary: 'Basic company search, returns array of suggested companies',

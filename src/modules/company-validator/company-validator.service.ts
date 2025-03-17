@@ -99,6 +99,29 @@ export class CompanyValidatorService {
     }));
   }
 
+  async hasValidCompanyName(companyName: string): Promise<CompanyResponseDto> {
+    if (companyName.length === 0) {
+      return { isValid: false };
+    }
+    const result = await this.companyModel
+      .find()
+      .where('firma')
+      .equals(companyName)
+      .exec();
+
+    const firstResult = result?.[0];
+    if (!firstResult) {
+      return { isValid: false };
+    }
+
+    return {
+      isValid: true,
+      ico: firstResult.ico,
+      dic: firstResult.dic,
+      companyName: firstResult.firma,
+    };
+  }
+
   async prefixSearchCompanyByName(
     companyName: string,
     limit = 5,
