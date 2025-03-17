@@ -24,7 +24,7 @@ function validateEmail(input, autocompleteEnabled = true) {
     body: new URLSearchParams({ email }),
   }).then((result) => {
     hideLoader(input);
-    if (result.status === 201) {
+    if (result.status === 200) {
       result.json().then((data) => {
         switch (data.level) {
           case 'RED':
@@ -69,7 +69,7 @@ function validateEmailAdvanced(input, autocompleteEnabled = true) {
     body: new URLSearchParams({ email }),
   }).then((result) => {
     hideLoader(input);
-    if (result.status === 201) {
+    if (result.status === 200) {
       result.json().then((data) => {
         showPartialResults(input, data.partialResults);
         switch (data.level) {

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   ParseIntPipe,
   Post,
   Query,
@@ -19,6 +20,7 @@ export class AddressValidatorController {
   ) {}
 
   @Post('partial/validate')
+  @HttpCode(200)
   @ApiOperation({
     summary: 'Partial address validation, returns address details',
   })
@@ -142,6 +144,7 @@ export class AddressValidatorController {
   }
 
   @Post('full/validate')
+  @HttpCode(200)
   @ApiOperation({
     summary: 'Full address validation, returns address details',
   })
