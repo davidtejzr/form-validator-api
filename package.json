@@ -34,6 +34,7 @@
     "disposable-email-domains-js": "^1.8.0",
     "JSONStream": "^1.3.5",
     "mongoose": "^8.9.4",
+    "nestjs-i18n": "^10.5.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

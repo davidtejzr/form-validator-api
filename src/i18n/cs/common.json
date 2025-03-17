@@ -1,0 +1,12 @@
+{
+  "emailValidation": {
+    "PENDING": "Probíhá ověřování...",
+    "VALID": "Tato e-mailová adresa je platná",
+    "INVALID_FORMAT": "Neplatný formát e-mailové adresy!",
+    "NO_MX_RECORDS": "Tato doména není schopna přijímat e-maily!",
+    "DISPOSABLE_ADDRESS": "Jedná se o dočasnou e-mailovou adresu!",
+    "BLACKLISTED_DOMAIN": "Tato doména je na černé listině!",
+    "UNDELIVERABLE_ADDRESS": "Tato e-mailová schránka je nedoručitelná!",
+    "UNDECLARED_ADDRESS": "Tato e-mailová schránka neexistuje!"
+  }
+}

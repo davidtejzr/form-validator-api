@@ -30,12 +30,12 @@ function validateEmail(input, autocompleteEnabled = true) {
           case 'RED':
             input.classList.add('validator_error');
             showResultBadge(input, 'error');
-            showMessage(input, data.statusMessage, 'error');
+            showMessage(input, data.friendlyMessage, 'error');
             break;
           case 'YELLOW':
             input.classList.add('validator_warning');
             showResultBadge(input, 'warning');
-            showMessage(input, data.statusMessage, 'yellow');
+            showMessage(input, data.friendlyMessage, 'yellow');
             break;
           case 'GREEN':
             input.classList.add('validator_success');

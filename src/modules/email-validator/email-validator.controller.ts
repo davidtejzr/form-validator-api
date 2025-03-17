@@ -14,6 +14,7 @@ import { EmailFormatValidatorService } from './services/email-format-validator.s
 import { EmailValidateBasicResponseDto } from './dtos/email-validate-basic-response-dto';
 import { EmailValidateRecommendedResponseDto } from './dtos/email-validate-recommended-response-dto';
 import { EmailValidateAdvancedResponseDto } from './dtos/email-validate-advanced-response-dto';
+import { I18nService } from 'nestjs-i18n';
 
 @Controller('email-validator')
 export class EmailValidatorController {
@@ -21,6 +22,7 @@ export class EmailValidatorController {
     private readonly emailValidatorService: EmailValidatorService,
     private readonly emailCacheService: EmailCacheService,
     private readonly emailFormatValidatorService: EmailFormatValidatorService,
+    private readonly i18n: I18nService,
   ) {}
 
   @Post('validate-basic')
@@ -88,7 +90,10 @@ export class EmailValidatorController {
     const statusMessage = await this.emailValidatorService.validateEmail(email);
     const level =
       this.emailValidatorService.resolveValidationLevel(statusMessage);
-    return { level, statusMessage };
+    const friendlyMessage = (await this.i18n.t(
+      `common.emailValidation.${statusMessage}`,
+    )) as string;
+    return { level, statusMessage, friendlyMessage };
   }
 
   @Post('validate-advanced')
@@ -123,7 +128,10 @@ export class EmailValidatorController {
     const level =
       this.emailValidatorService.resolveValidationLevel(statusMessage);
     const partialResults = this.emailValidatorService.getPartialResults();
-    return { statusMessage, level, partialResults };
+    const friendlyMessage = (await this.i18n.t(
+      `common.emailValidation.${statusMessage}`,
+    )) as string;
+    return { statusMessage, level, partialResults, friendlyMessage };
   }
 
   @Get('autocomplete')

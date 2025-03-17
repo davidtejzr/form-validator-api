@@ -8,4 +8,5 @@ export class EmailValidateRecommendedResponseDto extends EmailValidateBasicRespo
     default: EmailValidationStatus.VALID,
   })
   statusMessage: EmailValidationStatus;
+  friendlyMessage: string;
 }
