@@ -12,7 +12,7 @@ export class Company extends Document {
   @Prop({ required: false, default: null })
   isVatPayer: boolean;
 
-  @Prop({ required: true })
+  @Prop({ required: true, index: true })
   firma: string;
 
   @Prop({ required: true })

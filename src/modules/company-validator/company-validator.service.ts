@@ -16,27 +16,22 @@ export class CompanyValidatorService {
     if (ico.length !== 8) {
       return { isValid: false };
     }
-    const result = await this.companyModel
-      .find()
-      .where('ico')
-      .equals(ico)
-      .exec();
+    const result = await this.companyModel.findOne({ ico }).exec();
 
-    const firstResult = result?.[0];
-    if (!firstResult) {
+    if (!result) {
       return { isValid: false };
     }
 
-    if (firstResult.isVatPayer === null) {
+    if (result.isVatPayer === null) {
       void this.observeDicByIcoUsingAres(ico);
     }
 
     return {
       isValid: true,
-      ico: firstResult.ico,
-      dic: firstResult.dic,
-      isVatPayer: firstResult.isVatPayer,
-      companyName: firstResult.firma,
+      ico: result.ico,
+      dic: result.dic,
+      isVatPayer: result.isVatPayer,
+      companyName: result.firma,
     };
   }
 
@@ -62,22 +57,17 @@ export class CompanyValidatorService {
     if (dic.length >= 12) {
       return { isValid: false };
     }
-    const result = await this.companyModel
-      .find()
-      .where('dic')
-      .equals(dic)
-      .exec();
+    const result = await this.companyModel.findOne({ dic }).exec();
 
-    const firstResult = result?.[0];
-    if (!firstResult) {
+    if (!result) {
       return { isValid: false };
     }
 
     return {
       isValid: true,
-      ico: firstResult.ico,
-      dic: firstResult.dic,
-      companyName: firstResult.firma,
+      ico: result.ico,
+      dic: result.dic,
+      companyName: result.firma,
     };
   }
 
@@ -104,21 +94,18 @@ export class CompanyValidatorService {
       return { isValid: false };
     }
     const result = await this.companyModel
-      .find()
-      .where('firma')
-      .equals(companyName)
+      .findOne({ firma: companyName })
       .exec();
 
-    const firstResult = result?.[0];
-    if (!firstResult) {
+    if (!result) {
       return { isValid: false };
     }
 
     return {
       isValid: true,
-      ico: firstResult.ico,
-      dic: firstResult.dic,
-      companyName: firstResult.firma,
+      ico: result.ico,
+      dic: result.dic,
+      companyName: result.firma,
     };
   }
 
@@ -139,6 +126,54 @@ export class CompanyValidatorService {
       dic: company.dic,
       companyName: company.firma,
     }));
+  }
+
+  async luceneSearchCompanyByName(
+    companyName: string,
+    limit = 5,
+  ): Promise<CompanyResponseDto[]> {
+    return await this.companyModel
+      .aggregate([
+        {
+          $search: {
+            index: 'default',
+            compound: {
+              should: [
+                {
+                  autocomplete: {
+                    query: companyName,
+                    path: 'firma',
+                  },
+                },
+                {
+                  text: {
+                    query: companyName,
+                    path: 'firma',
+                  },
+                },
+              ],
+              minimumShouldMatch: 1,
+            },
+          },
+        },
+        {
+          $limit: limit,
+        },
+        {
+          $project: {
+            _id: 0,
+            isValid: { $literal: true },
+            ico: '$ico',
+            dic: '$dic',
+            companyName: '$firma',
+            score: { $meta: 'searchScore' },
+          },
+        },
+        {
+          $sort: { score: -1 },
+        },
+      ])
+      .exec();
   }
 
   async observeDicByIcoUsingAres(ico: string): Promise<void> {

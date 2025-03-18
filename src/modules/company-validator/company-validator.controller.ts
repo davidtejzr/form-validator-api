@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Query,
@@ -190,7 +191,14 @@ export class CompanyValidatorController {
     maximum: 20,
     default: 5,
     description: 'Maximum rows to return',
-    required: true,
+    required: false,
+  })
+  @ApiQuery({
+    name: 'useLucene',
+    type: Boolean,
+    default: false,
+    description: 'Maximum rows to return',
+    required: false,
   })
   @ApiResponse({
     status: 200,
@@ -200,7 +208,15 @@ export class CompanyValidatorController {
   async searchCompanyByName(
     @Query('companyName') companyName: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+    @Query('useLucene', new ParseBoolPipe({ optional: true }))
+    useLucene?: boolean,
   ): Promise<CompanyResponseDto[]> {
+    if (useLucene) {
+      return this.companyValidator.luceneSearchCompanyByName(
+        companyName,
+        limit,
+      );
+    }
     return this.companyValidator.prefixSearchCompanyByName(companyName, limit);
   }
 }

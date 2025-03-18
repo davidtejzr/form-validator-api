@@ -1,6 +1,6 @@
 import {
-  debounceValidate,
   hideLoader,
+  resetValidation,
   showAutocomplete,
   showLoader,
   showResultBadge,
@@ -104,6 +104,7 @@ function resolveCompanyNameAutocomplete(input) {
 
   const params = new URLSearchParams();
   params.append('companyName', input.value);
+  params.append('useLucene', 'true');
   fetch(`${apiUrl}/company-validator/company-name/autocomplete?${params}`, {
     method: 'GET',
   }).then((result) => {
@@ -122,7 +123,7 @@ function resolveCompanyNameAutocomplete(input) {
             listItem.addEventListener('click', () => {
               input.value = data[value]['companyName'];
               autocompleteWrapper.remove();
-              debounceValidate(input, () => validateCompanyName(input, false));
+              setCompanyData(data[value]);
             });
           }
         }
@@ -159,7 +160,7 @@ function resolveIcoAutocomplete(input) {
             listItem.addEventListener('click', () => {
               input.value = data[value]['ico'];
               autocompleteWrapper.remove();
-              debounceValidate(input, () => validateCompanyIco(input, false));
+              setCompanyData(data[value]);
             });
           }
         }
@@ -196,7 +197,7 @@ function resolveDicAutocomplete(input) {
             listItem.addEventListener('click', () => {
               input.value = data[value]['dic'];
               autocompleteWrapper.remove();
-              debounceValidate(input, () => validateCompanyDic(input, false));
+              setCompanyData(data[value]);
             });
           }
         }
@@ -209,16 +210,19 @@ function setCompanyData(data) {
   const companyNameInput = document.querySelector(
     'input[data-company-validator-name]',
   );
+  resetValidation(companyNameInput);
   companyNameInput.classList.add('validator_success');
   showResultBadge(companyNameInput, 'success');
   companyNameInput.value = data.companyName;
 
   const icoInput = document.querySelector('input[data-company-validator-ico]');
+  resetValidation(icoInput);
   icoInput.classList.add('validator_success');
   showResultBadge(icoInput, 'success');
   icoInput.value = data.ico;
 
   const vatInput = document.querySelector('input[data-company-validator-vat]');
+  resetValidation(vatInput);
   vatInput.classList.add('validator_success');
   showResultBadge(vatInput, 'success');
   vatInput.value = data.dic;
