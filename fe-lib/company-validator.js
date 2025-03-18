@@ -91,7 +91,7 @@ function resolveCompanyNameAutocomplete(input) {
           for (const value in data) {
             const listItem = document.createElement('li');
             listItem.className = 'validator_autocomplete-li';
-            listItem.innerText = data[value]['companyName'];
+            listItem.innerText = `${data[value]['companyName']} (IČO: ${data[value]['ico']})`;
             autocompleteWrapper.childNodes[0].appendChild(listItem);
             listItem.addEventListener('click', () => {
               input.value = data[value]['companyName'];
@@ -129,6 +129,7 @@ function resolveIcoAutocomplete(input) {
             const listItem = document.createElement('li');
             listItem.className = 'validator_autocomplete-li';
             listItem.innerText = data[value]['ico'];
+            listItem.innerText = `${data[value]['ico']} (${data[value]['companyName']})`;
             autocompleteWrapper.childNodes[0].appendChild(listItem);
             listItem.addEventListener('click', () => {
               input.value = data[value]['ico'];
@@ -165,7 +166,7 @@ function resolveDicAutocomplete(input) {
           for (const value in data) {
             const listItem = document.createElement('li');
             listItem.className = 'validator_autocomplete-li';
-            listItem.innerText = data[value]['dic'];
+            listItem.innerText = `${data[value]['dic']} (${data[value]['companyName']})`;
             autocompleteWrapper.childNodes[0].appendChild(listItem);
             listItem.addEventListener('click', () => {
               input.value = data[value]['dic'];

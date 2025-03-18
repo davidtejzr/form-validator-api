@@ -45,6 +45,8 @@ function validateAddress() {
 
 function resolveAddressStreetHouseNumberAutocomplete(input) {
   const id = input.id + '_autocomplete';
+  resetAddressValidation();
+  showLoader(input);
 
   if (document.getElementById(id)) {
     const autocompleteInstance = document.getElementById(id);
@@ -57,6 +59,7 @@ function resolveAddressStreetHouseNumberAutocomplete(input) {
   fetch(`${apiUrl}/address-validator/partial/street-autocomplete?${params}`, {
     method: 'GET',
   }).then((result) => {
+    hideLoader(input);
     if (result.status === 200) {
       result.json().then((data) => {
         if (data.length > 0) {
@@ -69,7 +72,7 @@ function resolveAddressStreetHouseNumberAutocomplete(input) {
             const currentStreetHouseNumber = `${data[value]['street']} ${data[value]['houseNumber']}`;
             const listItem = document.createElement('li');
             listItem.className = 'validator_autocomplete-li';
-            listItem.innerText = currentStreetHouseNumber;
+            listItem.innerText = `${currentStreetHouseNumber}, ${data[value]['city']}, ${data[value]['postalCode']}`;
             autocompleteWrapper.childNodes[0].appendChild(listItem);
             listItem.addEventListener('click', () => {
               input.value = currentStreetHouseNumber;
@@ -88,6 +91,9 @@ function resolveAddressStreetHouseNumberAutocomplete(input) {
               setAddressData(data[value]);
             });
           }
+        } else {
+          input.classList.add('validator_error');
+          showResultBadge(input, 'error');
         }
       });
     }
@@ -96,6 +102,7 @@ function resolveAddressStreetHouseNumberAutocomplete(input) {
 
 function resolveAddressCityAutocomplete(input) {
   const id = input.id + '_autocomplete';
+  showLoader(input);
 
   if (document.getElementById(id)) {
     const autocompleteInstance = document.getElementById(id);
@@ -107,6 +114,7 @@ function resolveAddressCityAutocomplete(input) {
   fetch(`${apiUrl}/address-validator/partial/city-autocomplete?${params}`, {
     method: 'GET',
   }).then((result) => {
+    hideLoader(input);
     if (result.status === 200) {
       result.json().then((data) => {
         if (data.length > 0) {
@@ -117,7 +125,7 @@ function resolveAddressCityAutocomplete(input) {
           for (const value in data) {
             const listItem = document.createElement('li');
             listItem.className = 'validator_autocomplete-li';
-            listItem.innerText = data[value]['city'];
+            listItem.innerText = `${data[value]['city']}, ${data[value]['postalCode']}`;
             autocompleteWrapper.childNodes[0].appendChild(listItem);
             listItem.addEventListener('click', () => {
               input.value = data[value]['city'];
@@ -139,6 +147,7 @@ function resolveAddressCityAutocomplete(input) {
 
 function resolveAddressZipAutocomplete(input) {
   const id = input.id + '_autocomplete';
+  showLoader(input);
 
   if (document.getElementById(id)) {
     const autocompleteInstance = document.getElementById(id);
@@ -153,6 +162,7 @@ function resolveAddressZipAutocomplete(input) {
       method: 'GET',
     },
   ).then((result) => {
+    hideLoader(input);
     if (result.status === 200) {
       result.json().then((data) => {
         if (data.length > 0) {
@@ -228,19 +238,16 @@ function resetAddressValidation() {
   );
   streetAndHouseNumberInput.classList.remove('validator_error');
   streetAndHouseNumberInput.classList.remove('validator_success');
-  showResultBadge(streetAndHouseNumberInput, 'success');
 
   const cityInput = document.querySelector(
     'input[data-address-validator-city]',
   );
   cityInput.classList.remove('validator_error');
   cityInput.classList.remove('validator_success');
-  showResultBadge(cityInput, 'success');
 
   const zipInput = document.querySelector('input[data-address-validator-zip]');
   zipInput.classList.remove('validator_error');
   zipInput.classList.remove('validator_success');
-  showResultBadge(zipInput, 'success');
 }
 
 function showAddressLoader() {
