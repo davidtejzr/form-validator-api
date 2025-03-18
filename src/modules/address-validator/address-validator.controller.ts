@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  ParseBoolPipe,
   ParseIntPipe,
   Post,
   Query,
@@ -43,7 +44,7 @@ export class AddressValidatorController {
     summary: 'Streets and house numbers autocomplete, returns array',
   })
   @ApiQuery({
-    name: 'streetAndHouseNumber',
+    name: 'streetHouseNumber',
     type: String,
     minLength: 5,
     maxLength: 100,
@@ -60,17 +61,32 @@ export class AddressValidatorController {
     description: 'Maximum rows to return',
     required: true,
   })
+  @ApiQuery({
+    name: 'useLucene',
+    type: Boolean,
+    default: false,
+    description: 'Use MongoDB Atlas Lucene search instead of regex',
+    required: false,
+  })
   @ApiResponse({
     status: 200,
     description: 'Return array of suggested address points',
     type: [AddressResponseDto],
   })
   streetAutocomplete(
-    @Query('streetAndHouseNumber') streetAndHouseNumber: string,
+    @Query('streetHouseNumber') streetHouseNumber: string,
     @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+    @Query('useLucene', new ParseBoolPipe({ optional: true }))
+    useLucene?: boolean,
   ) {
-    return this.addressValidatorService.streetAndHouseNumberSearch(
-      streetAndHouseNumber,
+    if (useLucene) {
+      return this.addressValidatorService.luceneStreetHouseNumberSearch(
+        streetHouseNumber,
+        limit,
+      );
+    }
+    return this.addressValidatorService.prefixStreetHouseNumberSearch(
+      streetHouseNumber,
       limit,
     );
   }

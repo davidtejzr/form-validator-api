@@ -32,15 +32,18 @@ export class OsmParserService {
 
         const city =
           feature.properties['addr:city'] || feature.properties['addr:place'];
+        const street = feature.properties['addr:street'] || city;
+        const houseNumber = feature.properties['addr:housenumber'];
 
         batch.push({
-          street: feature.properties['addr:street'] || city,
+          street,
           hasStreetName: !!feature.properties['addr:street'],
-          houseNumber: feature.properties['addr:housenumber'],
+          houseNumber,
           city,
           postalCode: feature.properties['addr:postcode'].replace(' ', ''),
           country: feature.properties['addr:country'],
           ruianRef: feature.properties['ref:ruian:addr'],
+          streetHouseNumber: `${street} ${houseNumber}`,
         });
 
         processed++;

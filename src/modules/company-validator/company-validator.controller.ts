@@ -197,7 +197,7 @@ export class CompanyValidatorController {
     name: 'useLucene',
     type: Boolean,
     default: false,
-    description: 'Maximum rows to return',
+    description: 'Use MongoDB Atlas Lucene search instead of regex',
     required: false,
   })
   @ApiResponse({

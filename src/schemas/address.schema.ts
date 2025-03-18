@@ -10,12 +10,13 @@ export class Address extends Document {
   @Prop({ required: true }) postalCode: string;
   @Prop({ required: true }) country: string;
   @Prop({ required: false, default: null }) ruianRef: string;
+  @Prop({ required: false }) streetHouseNumber: string;
 }
 
 export const AddressSchema = SchemaFactory.createForClass(Address);
-AddressSchema.index({ city: 1 }, { collation: { locale: 'cs', strength: 1 } });
 AddressSchema.index(
-  { street: 1, houseNumber: 1 },
+  { streetHouseNumber: 1 },
   { collation: { locale: 'cs', strength: 1 } },
 );
+AddressSchema.index({ city: 1 }, { collation: { locale: 'cs', strength: 1 } });
 AddressSchema.index({ postalCode: 1 });

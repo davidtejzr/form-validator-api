@@ -25,7 +25,7 @@ function validateAddress() {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({
-      streetAndHouseNumber: streetHouseNumber.value,
+      streetHouseNumber: streetHouseNumber.value,
       city: city.value,
       postalCode: zip.value,
     }),
@@ -52,7 +52,8 @@ function resolveAddressStreetHouseNumberAutocomplete(input) {
   }
 
   const params = new URLSearchParams();
-  params.append('streetAndHouseNumber', input.value);
+  params.append('streetHouseNumber', input.value);
+  params.append('useLucene', 'true');
   fetch(`${apiUrl}/address-validator/partial/street-autocomplete?${params}`, {
     method: 'GET',
   }).then((result) => {

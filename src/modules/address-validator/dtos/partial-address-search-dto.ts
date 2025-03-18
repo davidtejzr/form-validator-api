@@ -23,7 +23,7 @@ export class PartialAddressSearchDto {
     maxLength: 100,
     default: '17. listopadu 2172/15',
   })
-  streetAndHouseNumber: string;
+  streetHouseNumber: string;
 
   @ApiProperty({
     type: String,

@@ -15,19 +15,16 @@ export class AddressValidatorService {
   async isValidPartialAddress(
     pas: PartialAddressSearchDto,
   ): Promise<AddressResponseDto> {
-    if (!pas.streetAndHouseNumber && (!pas.street || !pas.houseNumber)) {
+    if (!pas.streetHouseNumber && (!pas.street || !pas.houseNumber)) {
       throw new BadRequestException(
         'Street and house number are required! Separately or together.',
       );
     }
 
-    const param = pas.streetAndHouseNumber
+    const param = pas.streetHouseNumber
       ? {
-          $expr: {
-            $regexMatch: {
-              input: { $concat: ['$street', ' ', '$houseNumber'] },
-              regex: new RegExp(`^${pas.streetAndHouseNumber}`, 'i'),
-            },
+          streetHouseNumber: {
+            $regex: new RegExp(`^${pas.streetHouseNumber}`, 'i'),
           },
         }
       : {
@@ -61,20 +58,19 @@ export class AddressValidatorService {
     };
   }
 
-  async streetAndHouseNumberSearch(
-    streetAndHouseNumber: string,
+  async prefixStreetHouseNumberSearch(
+    streetHouseNumber: string,
     limit = 5,
   ): Promise<AddressCityResponseDto[]> {
     const result = await this.addressModel
       .find({
-        $expr: {
-          $regexMatch: {
-            input: { $concat: ['$street', ' ', '$houseNumber'] },
-            regex: new RegExp(`^${streetAndHouseNumber}`, 'i'),
-          },
+        streetHouseNumber: {
+          $gte: streetHouseNumber,
+          $lt: streetHouseNumber + '\uffff',
         },
       })
       .collation({ locale: 'cs', strength: 1 })
+      .sort({ firma: 1 })
       .limit(limit)
       .exec();
 
@@ -85,6 +81,47 @@ export class AddressValidatorService {
       postalCode: address.postalCode,
       country: address.country,
     }));
+  }
+
+  async luceneStreetHouseNumberSearch(
+    streetHouseNumber: string,
+    limit = 5,
+  ): Promise<AddressCityResponseDto[]> {
+    return this.addressModel.aggregate([
+      {
+        $search: {
+          index: 'default',
+          compound: {
+            should: [
+              {
+                autocomplete: {
+                  query: streetHouseNumber,
+                  path: 'streetHouseNumber',
+                },
+              },
+              {
+                text: {
+                  query: streetHouseNumber,
+                  path: 'streetHouseNumber',
+                },
+              },
+            ],
+            minimumShouldMatch: 1,
+          },
+        },
+      },
+      { $limit: limit },
+      {
+        $project: {
+          street: 1,
+          houseNumber: 1,
+          city: 1,
+          postalCode: 1,
+          country: 1,
+          score: { $meta: 'searchScore' },
+        },
+      },
+    ]);
   }
 
   async citySearch(
