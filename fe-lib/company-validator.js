@@ -7,35 +7,6 @@ import {
 } from './input-helpers.js';
 import { apiUrl } from './config.js';
 
-function validateCompanyName(input, autocompleteEnabled = true) {
-  const companyName = input.value;
-  showLoader(input);
-
-  if (autocompleteEnabled) {
-    resolveCompanyNameAutocomplete(input);
-  }
-
-  fetch(`${apiUrl}/company-validator/company-name/validate`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({ companyName }),
-  }).then((result) => {
-    hideLoader(input);
-    if (result.status === 200) {
-      result.json().then((data) => {
-        if (data.isValid) {
-          setCompanyData(data);
-        } else {
-          input.classList.add('validator_error');
-          showResultBadge(input, 'error');
-        }
-      });
-    }
-  });
-}
-
 function validateCompanyIco(input, autocompleteEnabled = true) {
   const ico = input.value;
   showLoader(input);
@@ -96,6 +67,7 @@ function validateCompanyDic(input, autocompleteEnabled = true) {
 
 function resolveCompanyNameAutocomplete(input) {
   const id = input.id + '_autocomplete';
+  showLoader(input);
 
   if (document.getElementById(id)) {
     const autocompleteInstance = document.getElementById(id);
@@ -108,11 +80,12 @@ function resolveCompanyNameAutocomplete(input) {
   fetch(`${apiUrl}/company-validator/company-name/autocomplete?${params}`, {
     method: 'GET',
   }).then((result) => {
+    hideLoader(input);
     if (result.status === 200) {
       result.json().then((data) => {
         if (data.length > 0) {
           if (data.length === 1 && data[0]['companyName'] === input.value) {
-            return;
+            setCompanyData(data[0]);
           }
           let autocompleteWrapper = showAutocomplete(input, id);
           for (const value in data) {
@@ -228,4 +201,8 @@ function setCompanyData(data) {
   vatInput.value = data.dic;
 }
 
-export { validateCompanyName, validateCompanyIco, validateCompanyDic };
+export {
+  resolveCompanyNameAutocomplete,
+  validateCompanyIco,
+  validateCompanyDic,
+};

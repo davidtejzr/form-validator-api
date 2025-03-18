@@ -85,7 +85,7 @@ function resolveAddressStreetHouseNumberAutocomplete(input) {
               zipInput.value = data[value]['postalCode'];
 
               autocompleteWrapper.remove();
-              debounceValidate(input, () => validateAddress());
+              setAddressData(data[value]);
             });
           }
         }

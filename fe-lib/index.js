@@ -1,9 +1,9 @@
 import { debounceValidate, initWrapper } from './input-helpers.js';
 import { validateEmail, validateEmailAdvanced } from './email-validator.js';
 import {
+  resolveCompanyNameAutocomplete,
   validateCompanyDic,
   validateCompanyIco,
-  validateCompanyName,
 } from './company-validator.js';
 import {
   resolveAddressCityAutocomplete,
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
   );
   initWrapper(companyNameInput);
   companyNameInput.addEventListener('input', (e) =>
-    debounceValidate(e.target, () => validateCompanyName(e.target)),
+    debounceValidate(e.target, () => resolveCompanyNameAutocomplete(e.target)),
   );
 
   const companyIcoInput = document.querySelector(
