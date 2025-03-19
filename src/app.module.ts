@@ -21,7 +21,7 @@ import * as path from 'path';
       inject: [ConfigService],
     }),
     I18nModule.forRoot({
-      fallbackLanguage: 'cs',
+      fallbackLanguage: 'en',
       resolvers: [AcceptLanguageResolver],
       loaderOptions: {
         path: path.join(__dirname, '/i18n/'),

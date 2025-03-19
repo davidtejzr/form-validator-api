@@ -1,0 +1,12 @@
+{
+  "emailValidation": {
+    "PENDING": "Verification in progress...",
+    "VALID": "This email address is valid",
+    "INVALID_FORMAT": "Invalid email address format!",
+    "NO_MX_RECORDS": "This domain is not capable of receiving emails!",
+    "DISPOSABLE_ADDRESS": "This is a temporary email address!",
+    "BLACKLISTED_DOMAIN": "This domain is blacklisted!",
+    "UNDELIVERABLE_ADDRESS": "This email mailbox is undeliverable!",
+    "UNDECLARED_ADDRESS": "This email mailbox does not exist!"
+  }
+}

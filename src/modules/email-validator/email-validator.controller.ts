@@ -6,9 +6,16 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  Headers,
 } from '@nestjs/common';
 import { EmailValidatorService } from './email-validator.service';
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiHeader,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { EmailCacheService } from './services/email-cache.service';
 import { EmailFormatValidatorService } from './services/email-format-validator.service';
 import { EmailValidateBasicResponseDto } from './dtos/email-validate-basic-response-dto';
@@ -66,6 +73,15 @@ export class EmailValidatorController {
     summary:
       'Recommended email validation, returns the validation level and status message',
   })
+  @ApiHeader({
+    name: 'Accept-Language',
+    description: 'Language for response messages (e.g., en, cs)',
+    required: false,
+    schema: {
+      type: 'string',
+      default: 'cs',
+    },
+  })
   @ApiBody({
     schema: {
       type: 'object',
@@ -86,12 +102,14 @@ export class EmailValidatorController {
   })
   async validateEmailRecommended(
     @Body('email') email: string,
+    @Headers('Accept-Language') language: string = 'cs',
   ): Promise<EmailValidateRecommendedResponseDto> {
     const statusMessage = await this.emailValidatorService.validateEmail(email);
     const level =
       this.emailValidatorService.resolveValidationLevel(statusMessage);
     const friendlyMessage = (await this.i18n.t(
       `common.emailValidation.${statusMessage}`,
+      { lang: language },
     )) as string;
     return { level, statusMessage, friendlyMessage };
   }
@@ -101,6 +119,15 @@ export class EmailValidatorController {
   @ApiOperation({
     summary:
       'Advanced email validation, returns the validation level, status message and partial validation results',
+  })
+  @ApiHeader({
+    name: 'Accept-Language',
+    description: 'Language for response messages (e.g., en, cs)',
+    required: false,
+    schema: {
+      type: 'string',
+      default: 'cs',
+    },
   })
   @ApiBody({
     schema: {
@@ -123,6 +150,7 @@ export class EmailValidatorController {
   })
   async validateEmailAdvanced(
     @Body('email') email: string,
+    @Headers('Accept-Language') language: string = 'cs',
   ): Promise<EmailValidateAdvancedResponseDto> {
     const statusMessage = await this.emailValidatorService.validateEmail(email);
     const level =
@@ -130,6 +158,7 @@ export class EmailValidatorController {
     const partialResults = this.emailValidatorService.getPartialResults();
     const friendlyMessage = (await this.i18n.t(
       `common.emailValidation.${statusMessage}`,
+      { lang: language },
     )) as string;
     return { statusMessage, level, partialResults, friendlyMessage };
   }
