@@ -1,5 +1,3 @@
-import { showPartialResults } from './email-validator.js';
-
 const debounceTimers = new Map();
 
 function initWrapper(element, fullWidth = true) {
@@ -40,7 +38,7 @@ function resetValidation(input) {
   imgElements.forEach((img) => img.remove());
   wrapper.querySelector('.validator_message').innerText = '';
 
-  if (input.id === 'email-advanced') {
+  /* if (input.id === 'email-advanced') {
     showPartialResults(input, {
       invalidFormat: null,
       noMxRecords: null,
@@ -48,7 +46,7 @@ function resetValidation(input) {
       blacklistedDomain: null,
       undeliverableAddress: null,
     });
-  }
+  } */
 }
 
 function showLoader(input) {

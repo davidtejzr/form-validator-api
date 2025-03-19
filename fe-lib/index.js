@@ -1,5 +1,5 @@
 import { debounceValidate, initWrapper } from './input-helpers.js';
-import { validateEmail, validateEmailAdvanced } from './email-validator.js';
+import { validateEmail } from './email-validator.js';
 import {
   resolveCompanyNameAutocomplete,
   validateCompanyDic,
@@ -11,21 +11,28 @@ import {
   resolveAddressZipAutocomplete,
 } from './address-validator.js';
 
+/* DEMO feature - Advanced email validator (comment to disable) */
+/* START OF DEMO FEATURE */
+import {
+  resetPartialResults,
+  validateEmailAdvanced,
+} from './demo_email-advanced-validator.js';
+const emailInputDemo = document.querySelector(
+  'input[data-email-validator-advanced]',
+);
+initWrapper(emailInputDemo);
+emailInputDemo.addEventListener('input', (e) => {
+  resetPartialResults();
+  debounceValidate(e.target, () => validateEmailAdvanced(e.target));
+});
+/* END OF DEMO FEATURE */
+
 document.addEventListener('DOMContentLoaded', function () {
   /* Email validator */
   const emailInput = document.querySelector('input[data-email-validator]');
   initWrapper(emailInput);
   emailInput.addEventListener('input', (e) =>
     debounceValidate(e.target, () => validateEmail(e.target)),
-  );
-
-  /* Advanced email validator */
-  const emailInput2 = document.querySelector(
-    'input[data-email-validator-advanced]',
-  );
-  initWrapper(emailInput2);
-  emailInput2.addEventListener('input', (e) =>
-    debounceValidate(e.target, () => validateEmailAdvanced(e.target)),
   );
 
   /* Company validator */
