@@ -138,13 +138,13 @@ export class EmailValidatorController {
     @Headers('X-Allow-Is-Disposable-Check') disposableCheckHeader: string,
     @Headers('X-Allow-Smtp-Check') smtpCheckHeader: string,
   ): Promise<EmailValidateRecommendedResponseDto> {
-    const blacklistCheck = blacklistCheckHeader === 'true';
-    const disposableCheck = disposableCheckHeader === 'true';
-    const smtpCheck = smtpCheckHeader === 'true';
+    const disableBlacklistCheck = blacklistCheckHeader === 'false';
+    const disableDisposableCheck = disposableCheckHeader === 'false';
+    const disableSmtpCheck = smtpCheckHeader === 'false';
     const options: EmailValidationOptionsInterface = {
-      blacklistCheck,
-      disposableCheck,
-      smtpCheck,
+      blacklistCheck: !disableBlacklistCheck,
+      disposableCheck: !disableDisposableCheck,
+      smtpCheck: !disableSmtpCheck,
     };
 
     const statusMessage = await this.emailValidatorService.validateEmail(

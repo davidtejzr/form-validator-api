@@ -80,7 +80,7 @@ export class EmailValidatorService {
       this.partialResults,
     );
 
-    if (!options) {
+    if (!this.optionsChanged(options)) {
       await this.cacheService.persistValidationStatus(
         emailInstance,
         validationStatus,
