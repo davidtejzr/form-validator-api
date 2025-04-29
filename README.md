@@ -1,4 +1,4 @@
-## Project setup
+## Project setup - Backend
 
 ### Setup environment variables
 1. Copy `.env.example` to `.env`.
@@ -51,6 +51,27 @@ $ npm run start:prod
 # unit tests
 $ npm run test
 ```
+
+## Frontend library setup
+### variables setup (config.js)
+- apiUrl - URL of the backend API (e.g. http://localhost:3000);
+- language - language of API response friendly messages (e.g. cs, en);
+- useLucene - if true, the API will use Lucene for searching (e.g. true, false) - must by supported by the backend (MongoDB Atlas).
+
+### available HTML data-attributes (for native HTML5 inputs)
+#### Email validator
+- data-email-validator
+- data-email-validator-advanced (DEMO only)
+
+#### Address validator
+- data-address-validator-street
+- data-address-validator-city
+- data-address-validator-zip
+
+#### Company validator
+- data-company-validator-name
+- data-company-validator-ico
+- data-company-validator-dic
 
 ## License
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
