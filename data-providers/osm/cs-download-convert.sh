@@ -35,7 +35,7 @@ echo "Filtering addresses..."
 
 # Konverze OSM na GeoJSON
 echo "Converting OSM to GeoJSON..."
-osmium export "$FILTERED_OSM_FILE" -o "$GEOJSON_FILE"
+osmium export "$FILTERED_OSM_FILE" -o "$GEOJSON_FILE" --overwrite
 
 echo "Cleaning up temporary files..."
 rm -f "$OSM_FILE" "$FILTERED_OSM_FILE"

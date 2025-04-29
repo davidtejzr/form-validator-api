@@ -10,6 +10,7 @@ import { EmailCacheService } from './services/email-cache.service';
 import { EmailSmtpResolverService } from './services/email-smtp-resolver.service';
 import { EmailValidationLevelEnum } from '../../enums/email-validation-level.enum';
 import { EmailValidationResultInterface } from '../../interfaces/email-validation-result.interface';
+import { EmailValidationOptionsInterface } from '../../interfaces/email-validation-options.interface';
 
 @Injectable()
 export class EmailValidatorService {
@@ -24,7 +25,10 @@ export class EmailValidatorService {
     private smtpResolverService: EmailSmtpResolverService,
   ) {}
 
-  async validateEmail(email: string): Promise<EmailValidationStatus> {
+  async validateEmail(
+    email: string,
+    options?: EmailValidationOptionsInterface,
+  ): Promise<EmailValidationStatus> {
     this.partialResults = {
       cachedResult: false,
       invalidFormat: false,
@@ -41,7 +45,10 @@ export class EmailValidatorService {
     let emailInstance = await this.cacheService.getEmail(email);
     if (emailInstance) {
       await this.cacheService.increaseSearchCount(emailInstance);
-      if (!this.cacheService.isOutdated(emailInstance.updatedAt)) {
+      if (
+        !this.cacheService.isOutdated(emailInstance.updatedAt) &&
+        !this.optionsChanged(options)
+      ) {
         Object.assign(this.partialResults, {
           cachedResult: true,
           noMxRecords: emailInstance.noMxRecords,
@@ -64,22 +71,29 @@ export class EmailValidatorService {
       emailInstance = await this.cacheService.saveEmail(email);
     }
 
-    const validationStatus = await this.resolveValidationStatus(emailInstance);
+    const validationStatus = await this.resolveValidationStatus(
+      emailInstance,
+      options,
+    );
     await this.cacheService.checkAndSaveDomain(
       emailInstance.domain,
       this.partialResults,
     );
 
-    await this.cacheService.persistValidationStatus(
-      emailInstance,
-      validationStatus,
-      this.partialResults,
-    );
+    if (!options) {
+      await this.cacheService.persistValidationStatus(
+        emailInstance,
+        validationStatus,
+        this.partialResults,
+      );
+    }
+
     return validationStatus;
   }
 
   private async resolveValidationStatus(
     emailInstance: Email,
+    options?: EmailValidationOptionsInterface,
   ): Promise<EmailValidationStatus> {
     const mxRecord = await this.dnsResolverService.getHighestPriorityMxRecord(
       emailInstance.domain,
@@ -93,7 +107,7 @@ export class EmailValidatorService {
       emailInstance.domain,
     );
     this.partialResults.disposableAddress = isDisposable;
-    if (isDisposable) {
+    if ((!options || options.disposableCheck) && isDisposable) {
       return EmailValidationStatus.DISPOSABLE_ADDRESS;
     }
 
@@ -101,7 +115,7 @@ export class EmailValidatorService {
       emailInstance.domain,
     );
     this.partialResults.blacklistedDomain = isOnBlacklist;
-    if (isOnBlacklist) {
+    if ((!options || options.blacklistCheck) && isOnBlacklist) {
       return EmailValidationStatus.BLACKLISTED_DOMAIN;
     }
 
@@ -110,10 +124,10 @@ export class EmailValidatorService {
       emailInstance.email,
     );
     this.partialResults.undeliverableAddress = isUndeliverable;
-    if (isUndeliverable === 'undeclared') {
+    if ((!options || options.smtpCheck) && isUndeliverable === 'undeclared') {
       return EmailValidationStatus.UNDECLARED_ADDRESS;
     }
-    if (isUndeliverable) {
+    if ((!options || options.smtpCheck) && isUndeliverable) {
       return EmailValidationStatus.UNDELIVERABLE_ADDRESS;
     }
 
@@ -144,5 +158,14 @@ export class EmailValidatorService {
     } else {
       return value;
     }
+  }
+
+  private optionsChanged(options?: EmailValidationOptionsInterface): boolean {
+    if (!options) {
+      return false;
+    }
+
+    const { blacklistCheck, disposableCheck, smtpCheck } = options;
+    return !blacklistCheck || !disposableCheck || !smtpCheck;
   }
 }

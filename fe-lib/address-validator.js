@@ -5,7 +5,7 @@ import {
   showLoader,
   showResultBadge,
 } from './input-helpers.js';
-import { apiUrl } from './config.js';
+import { apiUrl, useLucene } from './config.js';
 
 function validateAddress() {
   const streetHouseNumber = document.querySelector(
@@ -55,7 +55,7 @@ function resolveAddressStreetHouseNumberAutocomplete(input) {
 
   const params = new URLSearchParams();
   params.append('streetHouseNumber', input.value);
-  params.append('useLucene', 'true');
+  params.append('useLucene', useLucene.toString());
   fetch(`${apiUrl}/address-validator/partial/street-autocomplete?${params}`, {
     method: 'GET',
   }).then((result) => {

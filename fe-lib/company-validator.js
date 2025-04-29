@@ -5,7 +5,7 @@ import {
   showLoader,
   showResultBadge,
 } from './input-helpers.js';
-import { apiUrl } from './config.js';
+import { apiUrl, useLucene } from './config.js';
 
 function validateCompanyIco(input, autocompleteEnabled = true) {
   const ico = input.value;
@@ -76,7 +76,7 @@ function resolveCompanyNameAutocomplete(input) {
 
   const params = new URLSearchParams();
   params.append('companyName', input.value);
-  params.append('useLucene', 'true');
+  params.append('useLucene', useLucene.toString());
   fetch(`${apiUrl}/company-validator/company-name/autocomplete?${params}`, {
     method: 'GET',
   }).then((result) => {

@@ -4,7 +4,7 @@ URL="https://opendata.csu.gov.cz/soubory/od/od_org03/res_data.csv"
 TARGET_DIR="data"
 
 # Vytvoření adresáře, pokud neexistuje
-mkdir -p "$DATA_DIR"
+mkdir -p "$TARGET_DIR"
 
 # Download the file and save it to the target directory
 echo "Downloading data from $URL..."

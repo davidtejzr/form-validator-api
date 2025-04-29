@@ -22,6 +22,7 @@ import { EmailValidateBasicResponseDto } from './dtos/email-validate-basic-respo
 import { EmailValidateRecommendedResponseDto } from './dtos/email-validate-recommended-response-dto';
 import { EmailValidateAdvancedResponseDto } from './dtos/email-validate-advanced-response-dto';
 import { I18nService } from 'nestjs-i18n';
+import { EmailValidationOptionsInterface } from '../../interfaces/email-validation-options.interface';
 
 @Controller('email-validator')
 export class EmailValidatorController {
@@ -82,6 +83,36 @@ export class EmailValidatorController {
       default: 'cs',
     },
   })
+  @ApiHeader({
+    name: 'X-Allow-Blacklist-Check',
+    required: false,
+    description:
+      'Set to true to enable blacklist checking (e.g., known spam or blocked domains)',
+    schema: {
+      type: 'boolean',
+      default: true,
+    },
+  })
+  @ApiHeader({
+    name: 'X-Allow-Is-Disposable-Check',
+    required: false,
+    description:
+      'Set to true to check if the email is from a disposable provider (e.g., temp-mail)',
+    schema: {
+      type: 'boolean',
+      default: true,
+    },
+  })
+  @ApiHeader({
+    name: 'X-Allow-Smtp-Check',
+    required: false,
+    description:
+      'Set to true to check if the email is valid and reachable via SMTP',
+    schema: {
+      type: 'boolean',
+      default: true,
+    },
+  })
   @ApiBody({
     schema: {
       type: 'object',
@@ -103,8 +134,23 @@ export class EmailValidatorController {
   async validateEmailRecommended(
     @Body('email') email: string,
     @Headers('Accept-Language') language: string = 'cs',
+    @Headers('X-Allow-Blacklist-Check') blacklistCheckHeader: string,
+    @Headers('X-Allow-Is-Disposable-Check') disposableCheckHeader: string,
+    @Headers('X-Allow-Smtp-Check') smtpCheckHeader: string,
   ): Promise<EmailValidateRecommendedResponseDto> {
-    const statusMessage = await this.emailValidatorService.validateEmail(email);
+    const blacklistCheck = blacklistCheckHeader === 'true';
+    const disposableCheck = disposableCheckHeader === 'true';
+    const smtpCheck = smtpCheckHeader === 'true';
+    const options: EmailValidationOptionsInterface = {
+      blacklistCheck,
+      disposableCheck,
+      smtpCheck,
+    };
+
+    const statusMessage = await this.emailValidatorService.validateEmail(
+      email,
+      options,
+    );
     const level =
       this.emailValidatorService.resolveValidationLevel(statusMessage);
     const friendlyMessage = (await this.i18n.t(

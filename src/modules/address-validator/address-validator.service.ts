@@ -5,6 +5,7 @@ import { Address } from '../../schemas/address.schema';
 import { PartialAddressSearchDto } from './dtos/partial-address-search-dto';
 import { AddressResponseDto } from './dtos/address-response-dto';
 import { AddressCityResponseDto } from './dtos/address-city-response-dto';
+import * as process from 'node:process';
 
 @Injectable()
 export class AddressValidatorService {
@@ -68,6 +69,7 @@ export class AddressValidatorService {
           $gte: streetHouseNumber,
           $lt: streetHouseNumber + '\uffff',
         },
+        country: process.env.DATA_LOCALE || 'CZ',
       })
       .collation({ locale: 'cs', strength: 1 })
       .sort({ firma: 1 })
@@ -110,6 +112,7 @@ export class AddressValidatorService {
           },
         },
       },
+      { $match: { country: process.env.DATA_LOCALE || 'CZ' } },
       { $limit: limit },
       {
         $project: {
@@ -129,7 +132,10 @@ export class AddressValidatorService {
     limit = 5,
   ): Promise<AddressCityResponseDto[]> {
     const result = await this.addressModel
-      .find({ city: { $gte: query, $lt: query + '\uffff' } })
+      .find({
+        city: { $gte: query, $lt: query + '\uffff' },
+        country: process.env.DATA_LOCALE || 'CZ',
+      })
       .collation({ locale: 'cs', strength: 1 })
       .sort({ city: 1, postalCode: 1, country: 1 })
       .exec();
@@ -164,7 +170,12 @@ export class AddressValidatorService {
   ): Promise<AddressCityResponseDto[]> {
     const result = await this.addressModel
       .aggregate([
-        { $match: { postalCode: { $gte: query, $lt: query + '\uffff' } } },
+        {
+          $match: {
+            postalCode: { $gte: query, $lt: query + '\uffff' },
+            country: process.env.DATA_LOCALE || 'CZ',
+          },
+        },
         {
           $group: {
             _id: { city: '$city' },
@@ -184,32 +195,5 @@ export class AddressValidatorService {
       city: address.city,
       country: address.country,
     }));
-  }
-
-  async isValidAddress(query: string) {
-    const regexQuery = new RegExp(`^${query}`, 'i');
-    return this.addressModel
-      .find({
-        $or: [
-          { street: { $regex: regexQuery } },
-          { city: { $regex: regexQuery } },
-          { houseNumber: { $regex: regexQuery } },
-        ],
-      })
-      .exec();
-  }
-
-  async fullAddressSearch(query: string, limit = 5) {
-    const regexQuery = new RegExp(`^${query}`, 'i');
-    return this.addressModel
-      .find({
-        $or: [
-          { street: { $regex: regexQuery } },
-          { city: { $regex: regexQuery } },
-          { houseNumber: { $regex: regexQuery } },
-        ],
-      })
-      .limit(limit)
-      .exec();
   }
 }
