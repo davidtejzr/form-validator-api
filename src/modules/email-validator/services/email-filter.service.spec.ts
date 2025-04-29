@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailFilterService } from './email-filter.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('EmailFilterService', () => {
   let service: EmailFilterService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmailFilterService],
+      providers: [EmailFilterService, ConfigService],
     }).compile();
 
     service = module.get<EmailFilterService>(EmailFilterService);

@@ -15,8 +15,10 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return basic API info', () => {
+      expect(appController.getHello()).toBe(
+        'Form Validator API 1.0, please see documentation for more information',
+      );
     });
   });
 });
